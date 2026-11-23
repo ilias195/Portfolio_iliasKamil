@@ -21,7 +21,7 @@
 .mechanic-description h2 { font:600 clamp(2rem,3vw,3rem)/1.1 Narrow,sans-serif; }
 .mechanic-description p,.level-changes,.audio-section p { color:var(--quiet); font-size:1rem; line-height:1.7; margin:12px 0; }
 .mechanic-description img { max-width:52px; max-height:40px; object-fit:contain; }
-@media (any-hover:hover) and (any-pointer:fine) {
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
   .mechanic-description img[class$="-icon"] { transition:transform 160ms ease-out; }
   .mechanic-description img[class$="-icon"]:hover { transform:scale(1.4); }
 }
@@ -46,6 +46,8 @@
 @media(max-width:900px) {
   .mechanic-layout { grid-template-columns:minmax(0,1fr); gap:24px; }
   .mechanic-video { width:100%; max-width:700px; margin-inline:auto; }
+}
+@media (pointer:coarse), (max-width:900px) {
   .mechanic-tab,.level-tab,.copy-code { min-height:44px; }
 }
 @media(max-width:580px) {

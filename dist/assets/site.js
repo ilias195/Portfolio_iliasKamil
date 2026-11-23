@@ -69,7 +69,7 @@ lampButtons.forEach(button => button.addEventListener('click', () => {
   try { sessionStorage.setItem('ik-veldlamp', on ? 'aan' : 'uit'); } catch { /* The current page still reflects the choice. */ }
 }));
 
-const movableLamp = window.matchMedia('(pointer: fine) and (prefers-reduced-motion: no-preference)');
+const movableLamp = window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
 lampScenes.forEach(scene => {
   scene.addEventListener('pointermove', event => {
     if (!movableLamp.matches || event.pointerType !== 'mouse' || !scene.classList.contains('lamp-on')) return;
@@ -77,11 +77,28 @@ lampScenes.forEach(scene => {
     scene.style.setProperty('--lamp-x', (event.clientX - bounds.left) / bounds.width * 100 + '%');
     scene.style.setProperty('--lamp-y', (event.clientY - bounds.top) / bounds.height * 100 + '%');
   });
-  scene.addEventListener('pointerleave', () => {
+  function resetBeamPosition() {
     scene.style.removeProperty('--lamp-x');
     scene.style.removeProperty('--lamp-y');
-  });
+  }
+  scene.addEventListener('pointerleave', resetBeamPosition);
+  movableLamp.addEventListener('change', resetBeamPosition);
 });
+
+const covers = document.querySelectorAll('.inspire-pic');
+if (covers.length && 'IntersectionObserver' in window) {
+  const observer = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting || entry.intersectionRatio < 0.2) continue;
+      entry.target.removeAttribute('data-awaiting-view');
+      observer.unobserve(entry.target);
+    }
+  }, {threshold: 0.2});
+  covers.forEach(cover => {
+    cover.setAttribute('data-awaiting-view', '');
+    observer.observe(cover);
+  });
+}
 
 // Older bookmarks open the finished style and preserve the destination and live view.
 const previewUrl = new URL(location.href);

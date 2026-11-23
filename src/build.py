@@ -14,11 +14,11 @@ STEPS = [
     ('Mijn doel', 'Mijn eigen horrorstudio', 'Mijn uiteindelijke droom is om een eigen gamebedrijf te beginnen dat first-person survival-horrorgames maakt voor PlayStation, pc en VR. Tijdens mijn loopbaan wil ik alvast ideeën voor mijn eigen studio uitwerken.'),
 ]
 INSPIRATION = [
-    ('Outlast', 'outlast', 'De camera met een batterij die leeg kan raken, zorgt voor extra spanning. Ook vind ik het spannend dat je moet vluchten en je verstoppen.', 'https://redbarrelsgames.com/games/outlast/'),
-    ('MADiSON', 'madison', 'De psychologische horror, spannende puzzels en onverwachte gebeurtenissen maken deze game voor mij bijzonder.', 'https://madisongame.com/'),
-    ('Metro Awakening VR', 'metro-awakening', 'Door VR voelt het alsof je echt in de game zit. Vooral de donkere omgevingen en geluiden maken het spannend.', 'https://www.vertigo-games.com/games/metro-awakening/'),
-    ('Until Dawn', 'until-dawn', 'Het verhaal en de keuzes die je maakt spreken mij aan. Elke beslissing kan gevolgen hebben voor de personages.', 'https://www.playstation.com/nl-nl/games/until-dawn/'),
-    ('Little Hope', 'little-hope', 'De mysterieuze sfeer en het verhaal vind ik interessant. Vooral dat je langzaam ontdekt wat er aan de hand is.', 'https://www.thedarkpictures.com/games/little-hope'),
+    ('Outlast', 'outlast', 'De camera met een batterij die leeg kan raken, zorgt voor extra spanning. Ook vind ik het spannend dat je moet vluchten en je verstoppen.'),
+    ('MADiSON', 'madison', 'De psychologische horror, spannende puzzels en onverwachte gebeurtenissen maken deze game voor mij bijzonder.'),
+    ('Metro Awakening VR', 'metro-awakening', 'Door VR voelt het alsof je echt in de game zit. Vooral de donkere omgevingen en geluiden maken het spannend.'),
+    ('Until Dawn', 'until-dawn', 'Het verhaal en de keuzes die je maakt spreken mij aan. Elke beslissing kan gevolgen hebben voor de personages.'),
+    ('Little Hope', 'little-hope', 'De mysterieuze sfeer en het verhaal vind ik interessant. Vooral dat je langzaam ontdekt wat er aan de hand is.'),
 ]
 
 
@@ -33,11 +33,11 @@ def homepage():
     <section class="route-preview"><div class="wrap route-inner"><div>{label('Over mij')}<h2>Naar mijn eigen<br><em>horrorstudio.</em></h2></div><div><p>Ik studeer Game Development in Amsterdam. Tussen mijn eerste Unity-project en een eigen studio liggen de stappen die ik wil zetten.</p><a class="text-link" href="about.html#route">{icon('route')} Bekijk mijn stappenplan</a></div></div></section>'''
 
 
-def inspiration_card(name, slug, note, url):
+def inspiration_card(name, slug, note):
     anchor = ' id="veldlamp"' if slug == 'metro-awakening' else ''
-    return f'''<article{anchor}><a class="inspiration-card" href="{url}" target="_blank" rel="noopener">
+    return f'''<article class="inspiration-card"{anchor}>
       <div class="inspire-pic"><img src="assets/inspiratie/{slug}-cover.webp" loading="lazy" alt="Cover van {name}"></div>
-      <h3>{name}</h3><p>{note}</p></a></article>'''
+      <h3>{name}</h3><p>{note}</p></article>'''
 
 
 def about():
