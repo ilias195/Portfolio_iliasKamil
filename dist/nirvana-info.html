@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="nl" data-scene="wintermist" data-palette="ijsblauw"><head>
+<meta charset="utf-8"><meta name="portfolio-versie" content="route-naar-mijn-horrorstudio"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#11171d"><meta name="description" content="Ik werkte aan de timer die reageert op waar je kijkt en aan het geluidssysteem. Terwijl een gedachte verdwijnt, veranderen de stemmen en de achtergrondklanken om je heen."><title>The Way to Nirvana · Mijn bijdrage · Ilias Kamil</title>
+<link rel="icon" type="image/png" href="assets/ik.png"><link rel="preload" href="assets/fonts/display.woff" as="font" type="font/woff" crossorigin><link rel="stylesheet" href="assets/site.css?v=route-naar-mijn-horrorstudio"><link rel="stylesheet" href="assets/mechanics.css?v=route-naar-mijn-horrorstudio"><link rel="stylesheet" href="assets/mechanics-scenes.css?v=route-naar-mijn-horrorstudio"><script src="assets/site.js?v=route-naar-mijn-horrorstudio" defer></script><script src="meekijken.js" defer></script></head>
+<body class="mechanics-view nirvana"><a class="skip" href="#inhoud">Naar de inhoud</a>
+<header class="mast"><div class="mast-inner">
+  <a class="identity" href="index.html" aria-label="Ilias Kamil, home"><span class="monogram" aria-hidden="true">IK</span><span class="identity-name">ILIAS KAMIL</span></a>
+  <div class="power" role="meter" aria-label="Camerabatterij bij het scrollen" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" title="De camerabatterij loopt leeg tijdens het scrollen"><span class="battery" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="power-value" aria-hidden="true">100%</span></div>
+  <nav class="site-nav" id="navigatie" aria-label="Hoofdnavigatie"><a href="index.html">Home</a>
+<a href="about.html">Over mij</a>
+<a href="myprojects.html" aria-current="page">Projecten</a>
+<a href="#contact">Contact</a></nav>
+  <button class="scene-trigger" type="button" aria-haspopup="dialog" aria-controls="sfeerkeuze" data-scene-open><span class="symbol" aria-hidden="true">&#xf1de;</span><span>Sfeermodus</span></button>
+  <button class="menu-trigger" type="button" aria-expanded="false" aria-controls="navigatie" aria-label="Menu openen"><span class="symbol" aria-hidden="true">&#xf0c9;</span></button>
+</div></header><main id="inhoud" tabindex="-1"><div class="wrap technical"><a class="breadcrumb" href="nirvana.html"><span class="symbol" aria-hidden="true">&#xf07c;</span> The Way to Nirvana</a><section class="mechanics-page">
+
+        <h1 class="mechanics-title">Mijn bijdrage<span class="accent-dot">.</span></h1>
+
+        <p class="mechanics-subtitle">De gameplay en systemen die ik voor The Way to Nirvana heb ontwikkeld.</p>
+
+
+        
+
+        <div class="mechanic-tabs">
+
+            <button class="mechanic-tab active" type="button">
+                Timer
+            </button>
+
+            <button class="mechanic-tab" type="button">
+                Sounds
+            </button>
+
+        </div>
+
+
+        
+
+        <div class="mechanic-content active">
+
+            <div class="mechanic-layout">
+
+                
+
+                <div class="mechanic-video">
+
+                    <img src="Videos/Timer/Timer.gif" alt="De cirkelvormige timer telt af terwijl de speler naar een gedachte kijkt." width="416" height="278" style="height:auto" loading="lazy" decoding="async">
+
+                </div>
+
+
+                
+
+                <div class="mechanic-description">
+
+                    <div class="timer-header">
+
+                        <img src="Img/icoons/timerfull.webp" class="timer-icon" alt="Timer icon" loading="lazy">
+
+                        <h2>Timer</h2>
+
+                    </div>
+
+                    <p>
+                        Voor The Way to Nirvana heb ik een
+                        cirkelvormige timer gemaakt met Unity UI.
+
+                        Met een Raycast controleer ik of de speler
+                        naar een Thought kijkt. Zolang de speler
+                        kijkt, wordt de resterende tijd afgeteld
+                        met Time.deltaTime.
+
+                        Met fillAmount laat ik zien hoeveel tijd
+                        er over is. Daarnaast heb ik een Gradient
+                        toegevoegd, waardoor de timer tijdens
+                        het aftellen van kleur verandert.
+
+                        Wanneer de speler wegkijkt, wordt de
+                        timer verborgen en visueel gereset.
+                        Ondertussen herstelt de resterende tijd
+                        geleidelijk naar de beginwaarde.
+                    </p>
+
+
+                    
+
+                    <div class="code-snippets-section">
+
+                        <h3 class="code-snippets-title">Codefragmenten</h3>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>LookBehaviour.cs — Gaze Detection</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>void Update()
+{
+    Ray ray = cam.ViewportPointToRay(
+        new Vector3(0.5f, 0.5f, 0f)
+    );
+
+    Thought thought = null;
+    RaycastHit hit;
+
+    if (Physics.Raycast(ray, out hit, maxDistance, interactableMask))
+    {
+        thought = hit.transform.parent.GetComponent&lt;Thought&gt;();
+    }
+
+    if (thought != currentThought)
+    {
+        if (currentThought != null)
+        {
+            currentThought.StopLooking();
+        }
+
+        if (thought != null)
+        {
+            thought.StartLooking();
+        }
+
+        currentThought = thought;
+    }
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>Thought.cs — Countdown &amp; Reset</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>void Update()
+{
+    if (isLookedAt)
+    {
+        currentThoughtTime -= Time.deltaTime;
+
+        circleTimer.timeLeft = currentThoughtTime;
+
+        if (currentThoughtTime &lt;= 0)
+        {
+            CompleteLooking();
+        }
+    }
+    else if (currentThoughtTime &lt; thoughtTimer)
+    {
+        currentThoughtTime += Time.deltaTime;
+
+        if (currentThoughtTime &gt; thoughtTimer)
+        {
+            currentThoughtTime = thoughtTimer;
+        }
+    }
+}
+
+public void StartLooking()
+{
+    isLookedAt = true;
+
+    circleTimer.StartTimer(
+        thoughtTimer,
+        currentThoughtTime
+    );
+}
+
+public void StopLooking()
+{
+    isLookedAt = false;
+    circleTimer.ResetTimer();
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>CircleTimer.cs — Timer UI</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>void Update()
+{
+    if (timeLeft &gt; 0)
+    {
+        float progress = timeLeft / duration;
+
+        timerImage.fillAmount = progress;
+
+        timerImage.color = gradient.Evaluate(progress);
+    }
+}
+
+public void StartTimer(float duration, float timeLeft)
+{
+    this.duration = duration;
+    this.timeLeft = timeLeft;
+
+    timerImage.enabled = true;
+    lotusImage.enabled = true;
+}
+
+public void ResetTimer()
+{
+    timeLeft = duration;
+
+    timerImage.enabled = false;
+    lotusImage.enabled = false;
+}</code></pre>
+
+                        </details>
+
+                    </div>
+
+
+                    
+
+                    <div class="github-links">
+
+                        <a href="https://github.com/ilias195/The-Way-to-Nirvana/blob/main/Assets/Scripts/LookBehaviour.cs" class="github-code-btn" target="_blank" rel="noopener">LookBehaviour.cs</a>
+
+                        <a href="https://github.com/ilias195/The-Way-to-Nirvana/blob/main/Assets/Scripts/ThoughtBehaviour/Thought.cs" class="github-code-btn" target="_blank" rel="noopener">Thought.cs</a>
+
+                        <a href="https://github.com/ilias195/The-Way-to-Nirvana/blob/main/Assets/Scripts/CircleTimer.cs" class="github-code-btn" target="_blank" rel="noopener">CircleTimer.cs</a>
+
+                    </div>
+
+                </div> 
+
+            </div> 
+
+        </div> 
+
+
+        
+
+        <div class="mechanic-content">
+
+            <div class="mechanic-layout">
+
+                
+
+                <div class="mechanic-video">
+
+                    <img src="Videos/Sound/Sound.gif" alt="Gedachten langs het pad in The Way to Nirvana tijdens de audiodemonstratie." width="416" height="264" style="height:auto" loading="lazy" decoding="async">
+
+
+                    
+
+                    <div class="audio-section">
+
+                        <h3>Audio voorbeelden</h3>
+
+
+                        
+
+                        <div class="audio-player">
+
+                            <p>Ambience sound</p>
+
+                            <audio controls preload="none">
+                                <source src="Videos/Sound/mp3/Ambience&amp;drones.mp3" type="audio/mpeg">
+                            </source></audio>
+
+                        </div>
+
+
+                        
+
+                        <div class="audio-player">
+
+                            <p>Voice sound</p>
+
+                            <audio controls preload="none">
+                                <source src="Videos/Sound/mp3/Voices&amp;Drones.mp3" type="audio/mpeg">
+                            </source></audio>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                
+
+                <div class="mechanic-description">
+
+                    <h2>Sounds</h2>
+
+                    <p>
+                        Ik heb voor de audio meerdere AudioSources
+                        in Unity gebruikt, zoals ambience, voices
+                        en drone sounds.
+
+                        Deze geluiden spelen tegelijk af en
+                        veranderen automatisch van volume
+                        tijdens het spelen.
+
+                        Met behulp van Mathf.Lerp lopen de
+                        overgangen vloeiend in elkaar over.
+
+                        De audio reageert op hoeveel thoughts
+                        er nog over zijn in het spel.
+
+                        Als er veel thoughts over zijn hoor je
+                        vooral rustige ambience, en wanneer het
+                        minder wordt komen de voices en drone
+                        sounds sterker naar voren om meer
+                        spanning te creëren.
+                    </p>
+
+
+                    
+
+                    <div class="code-snippets-section">
+
+                        <h3 class="code-snippets-title">Codefragmenten</h3>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>AudioManager.cs — Audio Setup</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>void Start()
+{
+    ambience.loop = true;
+    voices.loop = true;
+    drone.loop = true;
+
+    ambience.Play();
+    voices.Play();
+    drone.Play();
+
+    Spawner.Instance.remainingThoughtsPercentageChanged
+        .AddListener(UpdateVolumes);
+
+    UpdateVolumes();
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>AudioManager.cs — Dynamic Audio</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>public void UpdateVolumes()
+{
+    float percentage =
+        Spawner.Instance.remainingThoughtsPercentage;
+
+    targetAmbience = percentage;
+    targetVoices = 1f - percentage;
+    targetDrone = 1f - percentage;
+}
+
+void Update()
+{
+    ambience.volume = Mathf.Lerp(
+        ambience.volume,
+        targetAmbience,
+        fadeSpeed * Time.deltaTime
+    );
+
+    voices.volume = Mathf.Lerp(
+        voices.volume,
+        targetVoices,
+        fadeSpeed * Time.deltaTime
+    );
+
+    drone.volume = Mathf.Lerp(
+        drone.volume,
+        targetDrone,
+        fadeSpeed * Time.deltaTime
+    );
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>Spawner.cs — Thought Progress</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>// Fragment uit CompleteThought()
+
+thoughtCompleted.Invoke();
+
+remainingThoughtsPercentage =
+    1f - (float)thoughtsCompleted /
+    ((float)initialThoughtsCount + 60);
+
+remainingThoughtsPercentageChanged.Invoke();</code></pre>
+
+                        </details>
+
+                    </div>
+
+
+                    
+
+                    <div class="github-links">
+
+                        <a href="https://github.com/ilias195/The-Way-to-Nirvana/blob/main/Assets/Scripts/Audio/AudioManager.cs" class="github-code-btn" target="_blank" rel="noopener">AudioManager.cs</a>
+
+                        <a href="https://github.com/ilias195/The-Way-to-Nirvana/blob/main/Assets/Scripts/Spawner.cs" class="github-code-btn" target="_blank" rel="noopener">Spawner.cs</a>
+
+                    </div>
+
+                </div> 
+
+            </div> 
+
+        </div> 
+
+    </section>
+
+
+    </div></main><footer id="contact" class="footer"><div class="wrap footer-inner"><div><p class="eyebrow"><span class="rule"></span>Contact</p><h2>Neem contact op<span class="accent-dot">.</span></h2><a class="email-link" href="mailto:iliask195@gmail.com"><span class="symbol" aria-hidden="true">&#xf0e0;</span> iliask195@gmail.com</a></div><div class="socials"><a href="https://github.com/ilias195" target="_blank" rel="noopener"><span class="brand-symbol" aria-hidden="true">&#xf09b;</span> GitHub</a><a href="https://www.linkedin.com/in/ilias-kamil-03182b383/" target="_blank" rel="noopener"><span class="brand-symbol" aria-hidden="true">&#xf08c;</span> LinkedIn</a><a href="Img/CV_Ilias_Kamil_Word.pdf" target="_blank" rel="noopener"><span class="symbol" aria-hidden="true">&#xf15c;</span> Mijn cv</a></div></div><div class="wrap footer-base"><span>Ilias Kamil · Game developer</span><span><span class="symbol" aria-hidden="true">&#xf3c5;</span> Amsterdam, NL</span></div></footer><dialog class="scene-dialog" id="sfeerkeuze" aria-labelledby="sfeer-titel">
+      <div class="dialog-inner">
+        <div class="dialog-top"><div><p class="eyebrow"><span class="rule"></span>Wintermist</p><h2 id="sfeer-titel">Sfeermodus<span class="accent-dot">.</span></h2></div>
+          <button class="dialog-close" type="button" aria-label="Sfeermodus sluiten" data-scene-close><span class="symbol" aria-hidden="true">&#xf00d;</span></button></div>
+        <div class="style-row"><h3>Kleuraccent</h3><span class="style-sample"><img src="assets/paletten/ijsblauw.png" alt="" width="54" height="12">IJsblauw</span></div>
+        <div class="style-row"><div><h3>Veldlamp</h3><p>Schijn op het sneeuwpad naar de hut. De veldlamp is geïnspireerd op Metro Awakening.</p></div><button class="lamp-control" type="button" data-lamp-control aria-label="Veldlamp" aria-controls="lamp-proef" aria-pressed="true" hidden><span class="symbol" aria-hidden="true">&#xf0eb;</span> Veldlamp <span data-lamp-state>Aan</span></button></div>
+        <div class="lamp-preview lamp-on" id="lamp-proef" role="img" aria-label="Een besneeuwd pad naar een berghut in de wintermist" data-lamp-scene><span class="lamp-light" aria-hidden="true"></span></div>
+        <div class="dialog-foot"><a href="index.html#wintermist" data-view-lamp>Bekijk het sneeuwpad</a></div>
+      </div></dialog></body></html>

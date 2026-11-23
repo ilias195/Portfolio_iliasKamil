@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="nl" data-scene="wintermist" data-palette="ijsblauw"><head>
+<meta charset="utf-8"><meta name="portfolio-versie" content="route-naar-mijn-horrorstudio"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#11171d"><meta name="description" content="Mijn GameManager houdt de score van beide spelers bij. Na een treffer reset ik hun posities en levens voor de volgende ronde. Na de beslissende ronde verschijnt de uitslag."><title>Nova Striker · Mijn bijdrage · Ilias Kamil</title>
+<link rel="icon" type="image/png" href="assets/ik.png"><link rel="preload" href="assets/fonts/display.woff" as="font" type="font/woff" crossorigin><link rel="stylesheet" href="assets/site.css?v=route-naar-mijn-horrorstudio"><link rel="stylesheet" href="assets/mechanics.css?v=route-naar-mijn-horrorstudio"><link rel="stylesheet" href="assets/mechanics-scenes.css?v=route-naar-mijn-horrorstudio"><script src="assets/site.js?v=route-naar-mijn-horrorstudio" defer></script><script src="meekijken.js" defer></script></head>
+<body class="mechanics-view nova-striker"><a class="skip" href="#inhoud">Naar de inhoud</a>
+<header class="mast"><div class="mast-inner">
+  <a class="identity" href="index.html" aria-label="Ilias Kamil, home"><span class="monogram" aria-hidden="true">IK</span><span class="identity-name">ILIAS KAMIL</span></a>
+  <div class="power" role="meter" aria-label="Camerabatterij bij het scrollen" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" title="De camerabatterij loopt leeg tijdens het scrollen"><span class="battery" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="power-value" aria-hidden="true">100%</span></div>
+  <nav class="site-nav" id="navigatie" aria-label="Hoofdnavigatie"><a href="index.html">Home</a>
+<a href="about.html">Over mij</a>
+<a href="myprojects.html" aria-current="page">Projecten</a>
+<a href="#contact">Contact</a></nav>
+  <button class="scene-trigger" type="button" aria-haspopup="dialog" aria-controls="sfeerkeuze" data-scene-open><span class="symbol" aria-hidden="true">&#xf1de;</span><span>Sfeermodus</span></button>
+  <button class="menu-trigger" type="button" aria-expanded="false" aria-controls="navigatie" aria-label="Menu openen"><span class="symbol" aria-hidden="true">&#xf0c9;</span></button>
+</div></header><main id="inhoud" tabindex="-1"><div class="wrap technical"><a class="breadcrumb" href="nova-striker.html"><span class="symbol" aria-hidden="true">&#xf07c;</span> Nova Striker</a><section class="mechanics-page">
+    <h1 class="mechanics-title">Mijn bijdrage<span class="accent-dot">.</span></h1>
+    <p class="mechanics-subtitle">De gameplay en systemen die ik voor Nova Striker heb ontwikkeld.</p>
+
+    <div class="mechanic-content active">
+        <div class="mechanic-layout">
+            <div class="mechanic-video">
+                <figure class="mechanic-diagram"><img src="assets/mechanic-gifs/nova-score.gif" alt="De spelers scoren per ronde. Bij twee punten voor speler één verschijnt de einduitslag." width="720" height="380" loading="lazy"><figcaption>Schematische animatie</figcaption></figure>
+            </div>
+
+            <div class="mechanic-description">
+                <h2>Mijn bijdrage</h2>
+                <p>
+                    Ik heb een GameManager gebruikt om de scores van beide spelers bij te houden. 
+                    Wanneer een speler doodgaat, krijgt de tegenstander een punt.
+                     Daarna worden de posities, beweging en levens van beide spelers gereset, zodat een nieuwe ronde begint.
+                      De eerste speler met twee punten wint. Vervolgens wordt automatisch het eindscherm geladen met de winnaar
+                       en de eindscore.
+
+                </p>
+                
+            </div>
+        </div>
+    </div>
+</section>
+</div></main><footer id="contact" class="footer"><div class="wrap footer-inner"><div><p class="eyebrow"><span class="rule"></span>Contact</p><h2>Neem contact op<span class="accent-dot">.</span></h2><a class="email-link" href="mailto:iliask195@gmail.com"><span class="symbol" aria-hidden="true">&#xf0e0;</span> iliask195@gmail.com</a></div><div class="socials"><a href="https://github.com/ilias195" target="_blank" rel="noopener"><span class="brand-symbol" aria-hidden="true">&#xf09b;</span> GitHub</a><a href="https://www.linkedin.com/in/ilias-kamil-03182b383/" target="_blank" rel="noopener"><span class="brand-symbol" aria-hidden="true">&#xf08c;</span> LinkedIn</a><a href="Img/CV_Ilias_Kamil_Word.pdf" target="_blank" rel="noopener"><span class="symbol" aria-hidden="true">&#xf15c;</span> Mijn cv</a></div></div><div class="wrap footer-base"><span>Ilias Kamil · Game developer</span><span><span class="symbol" aria-hidden="true">&#xf3c5;</span> Amsterdam, NL</span></div></footer><dialog class="scene-dialog" id="sfeerkeuze" aria-labelledby="sfeer-titel">
+      <div class="dialog-inner">
+        <div class="dialog-top"><div><p class="eyebrow"><span class="rule"></span>Wintermist</p><h2 id="sfeer-titel">Sfeermodus<span class="accent-dot">.</span></h2></div>
+          <button class="dialog-close" type="button" aria-label="Sfeermodus sluiten" data-scene-close><span class="symbol" aria-hidden="true">&#xf00d;</span></button></div>
+        <div class="style-row"><h3>Kleuraccent</h3><span class="style-sample"><img src="assets/paletten/ijsblauw.png" alt="" width="54" height="12">IJsblauw</span></div>
+        <div class="style-row"><div><h3>Veldlamp</h3><p>Schijn op het sneeuwpad naar de hut. De veldlamp is geïnspireerd op Metro Awakening.</p></div><button class="lamp-control" type="button" data-lamp-control aria-label="Veldlamp" aria-controls="lamp-proef" aria-pressed="true" hidden><span class="symbol" aria-hidden="true">&#xf0eb;</span> Veldlamp <span data-lamp-state>Aan</span></button></div>
+        <div class="lamp-preview lamp-on" id="lamp-proef" role="img" aria-label="Een besneeuwd pad naar een berghut in de wintermist" data-lamp-scene><span class="lamp-light" aria-hidden="true"></span></div>
+        <div class="dialog-foot"><a href="index.html#wintermist" data-view-lamp>Bekijk het sneeuwpad</a></div>
+      </div></dialog></body></html>

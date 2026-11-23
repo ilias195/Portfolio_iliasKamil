@@ -1,0 +1,8 @@
+__pycache__/
+.openai/
+.wrangler/
+node_modules/
+.dev.vars
+.dev.vars.*
+.env
+.env.*

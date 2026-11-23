@@ -1,0 +1,1409 @@
+<section class="mechanics-page">
+
+        <h1 class="mechanics-title">Mijn bijdrage<span class="accent-dot">.</span></h1>
+
+        <p class="mechanics-subtitle">De gameplay en systemen die ik voor Bow &amp; Arrow Trials heb ontwikkeld.</p>
+
+
+        
+
+        <div class="mechanic-tabs">
+
+            <button type="button" class="mechanic-tab active">
+                Bow
+            </button>
+
+            <button type="button" class="mechanic-tab">
+                Arrow
+            </button>
+
+            <button type="button" class="mechanic-tab">
+                Haptics
+            </button>
+
+            <button type="button" class="mechanic-tab">
+                Enemy AI
+            </button>
+
+            <button type="button" class="mechanic-tab">
+                Target
+            </button>
+
+            <button type="button" class="mechanic-tab">
+                Timer
+            </button>
+
+        </div>
+
+
+        
+
+        <div class="mechanic-content active">
+
+            <div class="mechanic-layout">
+
+                
+
+                <div class="mechanic-video">
+
+                    <figure class="mechanic-diagram"><img src="assets/mechanic-gifs/bow-pees.gif" alt="Drie punten vormen de boogpees. Het middelpunt beweegt met de VR-hand mee en keert na loslaten terug." width="720" height="380" loading="lazy"><figcaption>Schematische animatie</figcaption></figure>
+
+                </div>
+
+
+                
+
+                <div class="mechanic-description">
+
+                    <h2>Bow System</h2>
+
+                    <p>
+                        Voor Bow &amp; Arrow Trials heb ik een interactief
+                        boogsysteem ontwikkeld waarbij de speler de
+                        boogpees met de VR-controller naar achteren
+                        kan trekken.
+
+                        Met een LineRenderer geef ik de boogpees weer
+                        aan de hand van drie punten. Terwijl de speler
+                        de pees uittrekt, beweegt het middelste punt
+                        mee met de positie van de hand.
+
+                        Met Vector3.Dot bereken ik de trekafstand
+                        in de juiste richting. Vervolgens gebruik
+                        ik Mathf.Clamp om de maximale trekafstand
+                        te beperken.
+
+                        De trekafstand wordt gebruikt om de
+                        schietsnelheid van de pijl te berekenen.
+                        Hoe verder de pees wordt uitgetrokken,
+                        hoe harder de pijl wordt afgeschoten.
+
+                        Wanneer de speler de pees loslaat,
+                        beweegt deze met Vector3.Lerp vloeiend
+                        terug naar de rustpositie.
+                    </p>
+
+
+                    
+
+                    <div class="code-snippets-section">
+
+                        <h3 class="code-snippets-title">Codefragmenten</h3>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>BowString.cs — LineRenderer</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>void Awake()
+{
+    line = GetComponent&lt;LineRenderer&gt;();
+
+    line.positionCount = 3;
+    line.useWorldSpace = true;
+}
+
+void LateUpdate()
+{
+    line.SetPosition(0, end1.position);
+    line.SetPosition(1, grabPoint.position);
+    line.SetPosition(2, end2.position);
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>BowStringPull.cs — Draw Distance</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>void Update()
+{
+    if (isPulling &amp;&amp; pullingHand != null)
+    {
+        Vector3 direction = pullDirection.forward;
+
+        Vector3 handOffset =
+            pullingHand.position - stringRestPoint.position;
+
+        float distance =
+            Vector3.Dot(handOffset, direction);
+
+        distance = Mathf.Clamp(
+            distance,
+            0f,
+            maxDrawDistance
+        );
+
+        stringGrabPoint.position =
+            stringRestPoint.position +
+            direction * distance;
+    }
+    else
+    {
+        stringGrabPoint.position = Vector3.Lerp(
+            stringGrabPoint.position,
+            stringRestPoint.position,
+            15f * Time.deltaTime
+        );
+    }
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>BowShoot.cs — Draw Strength &amp; Shooting</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>// Fragment uit Update()
+
+float distance = Vector3.Distance(
+    stringRestPoint.position,
+    stringGrabPoint.position
+);
+
+drawAmount = Mathf.Clamp01(
+    distance / maxDrawDistance
+);
+
+if (drawAmount &gt; storedDrawAmount)
+{
+    storedDrawAmount = drawAmount;
+}
+
+// Fragment uit ShootArrow()
+
+float shootSpeed = Mathf.Lerp(
+    minShootForce,
+    maxShootForce,
+    storedDrawAmount
+);
+
+Vector3 shootDirectionVector =
+    shootDirection.forward;
+
+arrowToShoot.linearVelocity =
+    shootDirectionVector * shootSpeed;</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>BowHover.cs — Bow Hover System</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>void Awake()
+{
+    rb = GetComponent&lt;Rigidbody&gt;();
+    grabInteractable = GetComponent&lt;XRGrabInteractable&gt;();
+
+    rb.useGravity = false;
+}
+
+void OnRelease(SelectExitEventArgs args)
+{
+    rb.useGravity = false;
+
+    rb.linearVelocity = Vector3.zero;
+    rb.angularVelocity = Vector3.zero;
+}</code></pre>
+
+                        </details>
+
+                    </div>
+
+
+                    
+
+                    <div class="github-links">
+
+                        <a href="https://github.com/ilias195/VR-Game/tree/main/Assets/Scripts/Bow" class="github-code-btn" target="_blank" rel="noopener">GitHub Repository</a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        
+
+        <div class="mechanic-content">
+
+            <div class="mechanic-layout">
+
+                
+
+                <div class="mechanic-video">
+
+                    <figure class="mechanic-diagram"><img src="assets/mechanic-gifs/bow-pijl.gif" alt="Een vrijgelaten pijl zweeft, wordt in de socket geplaatst en krijgt na vrijgave snelheid." width="720" height="380" loading="lazy"><figcaption>Schematische animatie</figcaption></figure>
+
+                </div>
+
+
+                
+
+                <div class="mechanic-description">
+
+                    <h2>Arrow Interaction</h2>
+
+                    <p>
+                        Voor Bow &amp; Arrow Trials heb ik een
+                        interactief pijlsysteem ontwikkeld.
+
+                        Met XRGrabInteractable kan de speler
+                        pijlen oppakken en vasthouden met
+                        de VR-controller.
+
+                        Wanneer een pijl wordt losgelaten
+                        zonder te worden afgeschoten,
+                        blijft deze op zijn plek zweven.
+
+                        Hiervoor schakel ik de zwaartekracht
+                        uit, maak ik de Rigidbody kinematic
+                        en zet ik de snelheid op nul.
+
+                        Om de pijl op de boog te plaatsen,
+                        gebruik ik een XRSocketInteractor.
+                        Deze detecteert wanneer een pijl
+                        in de socket wordt geplaatst.
+
+                        Wanneer de speler de boogpees loslaat,
+                        wordt de schietsnelheid berekend.
+                        Vervolgens worden de physics
+                        ingeschakeld en wordt de pijl
+                        in de schietrichting afgeschoten.
+                    </p>
+
+
+                    
+
+                    <div class="code-snippets-section">
+
+                        <h3 class="code-snippets-title">Codefragmenten</h3>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>ArrowHover.cs — Arrow Hover System</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>public void SetHoverMode()
+{
+    hasBeenShot = false;
+
+    rb.linearVelocity = Vector3.zero;
+    rb.angularVelocity = Vector3.zero;
+
+    rb.useGravity = false;
+    rb.isKinematic = true;
+}
+
+void OnRelease(SelectExitEventArgs args)
+{
+    if (!hasBeenShot)
+    {
+        SetHoverMode();
+    }
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>BowShoot.cs — Arrow Snapping</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>private void OnEnable()
+{
+    arrowSocket.selectEntered.AddListener(
+        OnArrowInserted
+    );
+
+    stringInteractable.selectExited.AddListener(
+        OnStringReleased
+    );
+}
+
+private void OnArrowInserted(SelectEnterEventArgs args)
+{
+    currentArrow =
+        args.interactableObject.transform
+            .GetComponent&lt;Rigidbody&gt;();
+
+    currentArrowInteractable =
+        args.interactableObject.transform
+            .GetComponent&lt;XRGrabInteractable&gt;();
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>BowShoot.cs — Arrow Shooting &amp; Physics</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>// Fragment uit ShootArrow()
+
+float shootSpeed = Mathf.Lerp(
+    minShootForce,
+    maxShootForce,
+    storedDrawAmount
+);
+
+DisableArrowInteraction(grab, arrowCollider);
+
+yield return new WaitForFixedUpdate();
+
+PrepareArrowPhysics(arrowToShoot);
+
+Vector3 shootDirectionVector =
+    shootDirection.forward;
+
+arrowToShoot.linearVelocity =
+    shootDirectionVector * shootSpeed;
+
+
+// Physics inschakelen
+
+private void PrepareArrowPhysics(Rigidbody arrow)
+{
+    arrow.isKinematic = false;
+    arrow.useGravity = true;
+
+    arrow.linearVelocity = Vector3.zero;
+    arrow.angularVelocity = Vector3.zero;
+}</code></pre>
+
+                        </details>
+
+                    </div>
+
+
+                    
+
+                    <div class="github-links">
+
+                        <a href="https://github.com/ilias195/VR-Game/tree/main/Assets/Scripts/Arrow" class="github-code-btn" target="_blank" rel="noopener">GitHub Repository</a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        
+
+        <div class="mechanic-content">
+
+            <div class="mechanic-layout">
+
+                
+
+                <div class="mechanic-video">
+
+                    <figure class="mechanic-diagram"><img src="assets/mechanic-gifs/bow-haptiek.gif" alt="De trilling van de VR-controller neemt toe met de spanning en stopt bij loslaten." width="720" height="380" loading="lazy"><figcaption>Schematische animatie</figcaption></figure>
+
+                </div>
+
+
+                
+
+                <div class="mechanic-description">
+
+                    <h2>Haptic Feedback</h2>
+
+                    <p>
+                        Om het boogschieten realistischer
+                        te laten voelen, heb ik haptic
+                        feedback toegevoegd aan de
+                        VR-controller.
+
+                        Wanneer de speler de boogpees
+                        vastpakt, detecteert het systeem
+                        welke hand de pees vasthoudt.
+
+                        Vervolgens wordt de huidige
+                        spanning opgehaald uit het
+                        BowShoot-script.
+
+                        Met Mathf.Lerp bereken ik de
+                        trillingssterkte op basis van
+                        de spanning van de boogpees.
+
+                        Hierdoor neemt de trilling toe
+                        naarmate de speler de pees verder
+                        naar achteren trekt.
+
+                        Bij een volledig berekende spanning
+                        wordt de maximaal ingestelde
+                        trillingssterkte bereikt.
+                    </p>
+
+
+                    
+
+                    <div class="code-snippets-section">
+
+                        <h3 class="code-snippets-title">Codefragmenten</h3>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>BowHaptics.cs — String Interaction</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>private void OnEnable()
+{
+    stringInteractable.selectEntered.AddListener(
+        OnStringGrabbed
+    );
+
+    stringInteractable.selectExited.AddListener(
+        OnStringReleased
+    );
+}
+
+private void OnStringGrabbed(SelectEnterEventArgs args)
+{
+    currentStringHand =
+        args.interactorObject as XRDirectInteractor;
+}
+
+private void OnStringReleased(SelectExitEventArgs args)
+{
+    currentStringHand = null;
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>BowHaptics.cs — Dynamic Haptic Feedback</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>private void Update()
+{
+    if (currentStringHand == null)
+    {
+        return;
+    }
+
+    float tension = bowShoot.CurrentDrawAmount;
+
+    float hapticStrength = Mathf.Lerp(
+        0f,
+        maxHapticStrength,
+        tension
+    );
+
+    HapticImpulsePlayer hapticPlayer =
+        currentStringHand
+            .GetComponent&lt;HapticImpulsePlayer&gt;();
+
+    if (hapticPlayer != null)
+    {
+        hapticPlayer.SendHapticImpulse(
+            hapticStrength,
+            hapticDuration
+        );
+    }
+}</code></pre>
+
+                        </details>
+
+                    </div>
+
+
+                    
+
+                    <div class="github-links">
+
+                        <a href="https://github.com/ilias195/VR-Game/blob/main/Assets/Scripts/Bow/BowHaptics.cs" class="github-code-btn" target="_blank" rel="noopener">GitHub Repository</a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        
+
+        <div class="mechanic-content">
+
+            <div class="mechanic-layout">
+
+                
+
+                <div class="mechanic-video">
+
+                    <figure class="mechanic-diagram"><img src="assets/mechanic-gifs/bow-ai.gif" alt="De AI selecteert een speldoel, controleert het zicht, wacht tot de richttijd is verstreken en voert de actie uit." width="720" height="380" loading="lazy"><figcaption>Schematische animatie</figcaption></figure>
+
+                </div>
+
+
+                
+
+                <div class="mechanic-description">
+
+                    <h2>Enemy AI</h2>
+
+                    <p>
+                        Voor Bow &amp; Arrow Trials heb ik een enemy
+                        ontwikkeld die automatisch targets kan
+                        selecteren, richten en beschieten.
+
+                        Via TrialTargetManager kiest de enemy
+                        het eerste beschikbare target.
+
+                        Vervolgens beweegt de rechterhand met
+                        Vector3.MoveTowards naar de positie
+                        waarmee de boogpees wordt uitgetrokken.
+
+                        Met Quaternion.LookRotation bereken ik
+                        de gewenste kijkrichting en met
+                        Quaternion.Slerp draait de enemy
+                        geleidelijk naar het target.
+
+                        Met een Raycast controleer ik vervolgens
+                        of het gekozen target daadwerkelijk
+                        in het vizier staat.
+
+                        Wanneer de enemy lang genoeg op
+                        het target heeft gericht, wordt
+                        de pijl afgeschoten.
+
+                        De schietrichting wordt berekend
+                        op basis van de positie van de
+                        pijl en de positie van het target.
+
+                        Daarnaast heb ik verschillende
+                        moeilijkheidsgraden toegevoegd
+                        die onder andere invloed hebben
+                        op de richttijd, handsnelheid
+                        en cooldown.
+                    </p>
+
+
+                    
+
+                    <div class="code-snippets-section">
+
+                        <h3 class="code-snippets-title">Codefragmenten</h3>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>EnemyHandMovement.cs — Hand Movement</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>private IEnumerator MoveHand(
+    Vector3 targetPosition,
+    float moveSpeed
+)
+{
+    while (
+        Vector3.Distance(
+            rightHand.localPosition,
+            targetPosition
+        ) &gt; 0.01f
+    )
+    {
+        rightHand.localPosition =
+            Vector3.MoveTowards(
+                rightHand.localPosition,
+                targetPosition,
+                moveSpeed * Time.deltaTime
+            );
+
+        yield return null;
+    }
+
+    rightHand.localPosition = targetPosition;
+}
+
+private void LateUpdate()
+{
+    if (holdingString &amp;&amp; stringGrabPoint != null)
+    {
+        stringGrabPoint.position =
+            rightHand.position;
+
+        enemyShooter.MoveArrowWithHand();
+    }
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>EnemyShooter.cs — Aiming System</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>private void AimAtTarget(GameObject target)
+{
+    Transform aimPoint =
+        target.transform.Find("Target/AimPoint");
+
+    if (aimPoint == null)
+        return;
+
+    Vector3 direction =
+        aimPoint.position - aimPivot.position;
+
+    Quaternion targetRotation =
+        Quaternion.LookRotation(direction);
+
+    aimPivot.rotation =
+        Quaternion.Slerp(
+            aimPivot.rotation,
+            targetRotation,
+            aimRotateSpeed * Time.deltaTime
+        );
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>EnemyShooter.cs — Target Detection</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>private bool TargetInSight(GameObject target)
+{
+    if (shootPoint == null || target == null)
+        return false;
+
+    RaycastHit hit;
+
+    if (Physics.Raycast(
+        shootPoint.position,
+        shootPoint.forward,
+        out hit,
+        aimCheckDistance,
+        enemyTargetLayer
+    ))
+    {
+        if (hit.transform == target.transform ||
+            hit.transform.IsChildOf(target.transform))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>EnemyShooter.cs — Arrow Shooting</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>// Fragment uit ShootArrow()
+
+Vector3 startPosition =
+    currentArrow.transform.position;
+
+Vector3 direction =
+    (targetPosition - startPosition).normalized;
+
+rb.linearVelocity = Vector3.zero;
+rb.angularVelocity = Vector3.zero;
+
+rb.isKinematic = false;
+rb.useGravity = false;
+
+rb.linearVelocity =
+    direction * arrowSpeed;
+
+currentArrow = null;</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>EnemyShooter.cs — Difficulty System</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>private void ApplyDifficulty()
+{
+    switch (difficulty)
+    {
+        case Difficulty.Easy:
+            currentSettings = easySettings;
+            break;
+
+        case Difficulty.Hard:
+            currentSettings = hardSettings;
+            break;
+
+        case Difficulty.Impossible:
+            currentSettings = impossibleSettings;
+            break;
+    }
+}</code></pre>
+
+                        </details>
+
+                    </div>
+
+
+                    
+
+                    <div class="github-links">
+
+                        <a href="https://github.com/ilias195/VR-Game/tree/main/Assets/Scripts/Enemy" class="github-code-btn" target="_blank" rel="noopener">GitHub Repository</a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        
+
+        <div class="mechanic-content">
+
+            <div class="mechanic-layout">
+
+                
+
+                <div class="mechanic-video">
+
+                    <figure class="mechanic-diagram"><img src="assets/mechanic-gifs/bow-doel.gif" alt="Het doel beweegt tussen routepunten. Na een treffer blijft de pijl vastzitten en verdwijnt het doel na anderhalve seconde." width="720" height="380" loading="lazy"><figcaption>Schematische animatie</figcaption></figure>
+
+                </div>
+
+
+                
+
+                <div class="mechanic-description">
+
+                    <h2>Target System</h2>
+
+                    <p>
+                        Voor Bow &amp; Arrow Trials heb ik een
+                        targetsysteem ontwikkeld waarbij
+                        targets tussen verschillende
+                        punten kunnen bewegen.
+
+                        Met Vector3.MoveTowards beweeg ik
+                        de targets geleidelijk naar hun
+                        volgende positie.
+
+                        Met Vector3.Distance controleer ik
+                        wanneer een target zijn bestemming
+                        heeft bereikt.
+
+                        Met OnCollisionEnter detecteer ik
+                        wanneer een pijl het target raakt.
+
+                        Bij een botsing wordt de snelheid
+                        van de pijl op nul gezet en wordt
+                        de Rigidbody kinematic gemaakt.
+
+                        Vervolgens maak ik de pijl een
+                        child van het target, zodat de
+                        pijl blijft vastzitten.
+
+                        Na 1,5 seconde wordt het target
+                        verwijderd en kunnen er een
+                        VFX-effect en geluid worden afgespeeld.
+
+                        Met TrialTargetManager houd ik
+                        daarnaast afzonderlijk bij hoeveel
+                        targets de speler en enemy
+                        nog moeten raken.
+                    </p>
+
+
+                    
+
+                    <div class="code-snippets-section">
+
+                        <h3 class="code-snippets-title">Codefragmenten</h3>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>Target.cs — Target Movement</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>private void Update()
+{
+    if (points.Length == 0) return;
+
+    Transform targetPoint = points[currentPointIndex];
+
+    transform.position = Vector3.MoveTowards(
+        transform.position,
+        targetPoint.position,
+        moveSpeed * Time.deltaTime
+    );
+
+    if (Vector3.Distance(
+        transform.position,
+        targetPoint.position
+    ) &lt; 0.05f)
+    {
+        currentPointIndex++;
+
+        if (currentPointIndex &gt;= points.Length)
+        {
+            currentPointIndex = 0;
+        }
+    }
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>Target.cs — Arrow Collision</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>private void OnCollisionEnter(Collision collision)
+{
+    if (!collision.gameObject.CompareTag("Arrow"))
+        return;
+
+    GameObject arrow = collision.gameObject;
+
+    Rigidbody arrowRb =
+        arrow.GetComponent&lt;Rigidbody&gt;();
+
+    if (arrowRb != null)
+    {
+        arrowRb.linearVelocity = Vector3.zero;
+        arrowRb.angularVelocity = Vector3.zero;
+
+        arrowRb.isKinematic = true;
+        arrowRb.useGravity = false;
+    }
+
+    arrow.transform.SetParent(transform, true);
+
+    StartCoroutine(RemoveTargetAndArrow(arrow));
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>Target.cs — Target Destruction &amp; VFX</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>private IEnumerator RemoveTargetAndArrow(
+    GameObject arrow
+)
+{
+    yield return new WaitForSeconds(1.5f);
+
+    if (destroyVFX != null)
+    {
+        Instantiate(
+            destroyVFX,
+            transform.position,
+            transform.rotation
+        );
+    }
+
+    if (destroySound != null)
+    {
+        AudioSource.PlayClipAtPoint(
+            destroySound,
+            transform.position
+        );
+    }
+
+    if (isPlayerTarget)
+    {
+        trialTargetManager.PlayerTargetDestroyed(
+            targetRoot
+        );
+    }
+    else
+    {
+        trialTargetManager.EnemyTargetDestroyed(
+            targetRoot
+        );
+    }
+
+    Destroy(arrow);
+    Destroy(targetRoot);
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>TrialTargetManager.cs — Target Management</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>public void PlayerTargetDestroyed(GameObject target)
+{
+    TrialData currentTrial =
+        trials[currentTrialIndex];
+
+    currentTrial.playerTargets.Remove(target);
+
+    if (currentTrial.playerTargets.Count == 0)
+    {
+        trialTimeManager.StopPlayerTimer();
+    }
+}
+
+public void EnemyTargetDestroyed(GameObject target)
+{
+    TrialData currentTrial =
+        trials[currentTrialIndex];
+
+    currentTrial.enemyTargets.Remove(target);
+
+    if (currentTrial.enemyTargets.Count == 0)
+    {
+        trialTimeManager.StopEnemyTimer();
+    }
+}</code></pre>
+
+                        </details>
+
+                    </div>
+
+
+                    
+
+                    <div class="github-links">
+
+                        <a href="https://github.com/ilias195/VR-Game/tree/main/Assets/Scripts/Targets" class="github-code-btn" target="_blank" rel="noopener">GitHub Repository</a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        
+
+        <div class="mechanic-content">
+
+            <div class="mechanic-layout">
+
+                
+
+                <div class="mechanic-video">
+
+                    <figure class="mechanic-diagram"><img src="assets/mechanic-gifs/bow-tijd.gif" alt="Beide timers starten gelijk en stoppen ieder zodra de bijbehorende doelen zijn geraakt." width="720" height="380" loading="lazy"><figcaption>Schematische animatie</figcaption></figure>
+
+                </div>
+
+
+                
+
+                <div class="mechanic-description">
+
+                    <h2>Timer &amp; End Time</h2>
+
+                    <p>
+                        Voor Bow &amp; Arrow Trials heb ik een
+                        timersysteem ontwikkeld dat de tijden
+                        van de speler en enemy afzonderlijk
+                        bijhoudt.
+
+                        Beide timers starten tegelijkertijd
+                        bij het begin van een Trial.
+
+                        De tijd van de speler wordt via
+                        TextMeshPro weergegeven, terwijl
+                        de timer van de enemy onzichtbaar
+                        op de achtergrond loopt.
+
+                        Met Time.deltaTime wordt de
+                        verstreken tijd bijgehouden.
+
+                        Zodra de speler of enemy alle
+                        bijbehorende targets heeft geraakt,
+                        wordt de betreffende timer gestopt
+                        en de eindtijd opgeslagen.
+
+                        Na de derde Trial tel ik de
+                        tijden van alle drie de Trials
+                        bij elkaar op.
+
+                        Vervolgens vergelijk ik de totale
+                        tijd van de speler met die van
+                        de enemy.
+
+                        Degene met de laagste totale tijd
+                        wint.
+
+                        Het eindresultaat verschijnt
+                        vervolgens op een VR-canvas
+                        voor de speler.
+                    </p>
+
+
+                    
+
+                    <div class="code-snippets-section">
+
+                        <h3 class="code-snippets-title">Codefragmenten</h3>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>TrialTimeManager.cs — Timer System</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>private void Update()
+{
+    if (playerTimerRunning)
+    {
+        playerCurrentTime += Time.deltaTime;
+
+        if (currentTimerText != null)
+        {
+            currentTimerText.text =
+                playerCurrentTime.ToString("F2");
+        }
+    }
+
+    if (enemyTimerRunning)
+    {
+        enemyCurrentTime += Time.deltaTime;
+    }
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>TrialTimeManager.cs — Saving Trial Times</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>public void StopPlayerTimer()
+{
+    if (!playerTimerRunning)
+        return;
+
+    playerTimerRunning = false;
+
+    playerTimes[currentTrialIndex] =
+        playerCurrentTime;
+
+    CheckFinalResult();
+}
+
+public void StopEnemyTimer()
+{
+    if (!enemyTimerRunning)
+        return;
+
+    enemyTimerRunning = false;
+
+    enemyTimes[currentTrialIndex] =
+        enemyCurrentTime;
+
+    CheckFinalResult();
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>TrialTimeManager.cs — Final Result Calculation</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>private void CheckFinalResult()
+{
+    if (currentTrialIndex != 2)
+        return;
+
+    if (playerTimerRunning || enemyTimerRunning)
+        return;
+
+    ShowFinalResult();
+}
+
+// Fragment uit ShowFinalResult()
+
+float playerTotal =
+    playerTimes[0] +
+    playerTimes[1] +
+    playerTimes[2];
+
+float enemyTotal =
+    enemyTimes[0] +
+    enemyTimes[1] +
+    enemyTimes[2];
+
+if (playerTotal &lt; enemyTotal)
+{
+    resultText.text = "YOU WIN!";
+}
+else if (playerTotal &gt; enemyTotal)
+{
+    resultText.text = "YOU LOSE!";
+}
+else
+{
+    resultText.text = "DRAW!";
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>TrialTimeManager.cs — VR Result Canvas</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>// Fragment uit ShowFinalResult()
+
+Vector3 forward = head.forward;
+
+forward.y = 0f;
+forward.Normalize();
+
+finalResultCanvas.position =
+    head.position + forward * resultDistance;
+
+finalResultCanvas.LookAt(head);
+finalResultCanvas.Rotate(0f, 180f, 0f);
+
+finalResultPanel.SetActive(true);
+uiInteractor.SetActive(true);</code></pre>
+
+                        </details>
+
+                    </div>
+
+
+                    
+
+                    <div class="github-links">
+
+                        <a href="https://github.com/ilias195/VR-Game/blob/main/Assets/Scripts/GameManagers/TrialTimeManager.cs" class="github-code-btn" target="_blank" rel="noopener">GitHub Repository</a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    

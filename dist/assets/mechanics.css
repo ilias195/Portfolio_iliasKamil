@@ -1,0 +1,57 @@
+.technical { padding-block:31px 72px; }
+.mechanics-page { margin-top:25px; }
+.mechanics-title { font-size:clamp(3.6rem,6.5vw,6.3rem); }
+.mechanics-subtitle { font-size:1.13rem; color:var(--quiet); margin-top:14px; }
+.mechanic-tabs,.level-tabs { display:flex; flex-wrap:wrap; gap:8px; }
+.mechanic-tabs { padding-block:25px 20px; margin-bottom:20px; border-bottom:1px solid var(--line); }
+.mechanic-tab,.level-tab,.copy-code { border:1px solid var(--line); border-radius:2px; background:var(--panel); color:var(--quiet); font-size:.91rem; min-height:39px; padding:7px 13px; }
+.mechanic-tab.active,.level-tab.active { border-color:var(--accent); color:var(--accent); background:rgba(var(--accent-rgb),.11); }
+.level-tabs { margin:0 0 20px; }
+.level-tab { font-family:var(--mono); font-size:.8rem; }
+.mechanic-content,.level-content { min-width:0; }
+.mechanic-content:not(.active),.level-content:not(.active) { display:none; }
+.mechanic-content { margin-top:22px; }
+.mechanic-layout { display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr); gap:clamp(24px,4vw,62px); align-items:start; }
+.mechanic-video { display:grid; grid-template-columns:minmax(0,1fr); min-width:0; gap:12px; }
+.mechanic-video img,.mechanic-video audio { width:100%; max-width:100%; }
+.mechanic-video img { height:auto; }
+.mechanic-video>img,.mechanic-diagram img { border:1px solid var(--line); background:var(--surface); }
+.mechanic-diagram figcaption { margin-top:8px; color:var(--quiet); font-size:.92rem; }
+.mechanic-description { min-width:0; }
+.mechanic-description h2 { font:600 clamp(2rem,3vw,3rem)/1.1 Narrow,sans-serif; }
+.mechanic-description p,.level-changes,.audio-section p { color:var(--quiet); font-size:1rem; line-height:1.7; margin:12px 0; }
+.mechanic-description img { max-width:52px; max-height:40px; object-fit:contain; }
+@media (any-hover:hover) and (any-pointer:fine) {
+  .mechanic-description img[class$="-icon"] { transition:transform 160ms ease-out; }
+  .mechanic-description img[class$="-icon"]:hover { transform:scale(1.4); }
+}
+.mechanic-description h2:has(img),.mechanic-description div[class$='-header'] { display:flex; align-items:center; gap:12px; }
+.code-snippets-section,.github-links,.audio-section { margin-top:23px; }
+.code-snippets-title,.audio-section h3 { font-size:1.55rem; margin-bottom:12px; }
+.code-snippet { margin-block:7px; border:1px solid var(--line); border-radius:2px; overflow:hidden; background:var(--surface); }
+.code-header { display:flex; justify-content:space-between; align-items:center; gap:10px; list-style:none; padding:11px 13px; font: .85rem/1.5 var(--mono); overflow-wrap:anywhere; cursor:pointer; }
+.code-header::-webkit-details-marker { display:none; }
+.code-toggle { width:8px; height:8px; border-right:1px solid var(--accent); border-bottom:1px solid var(--accent); transform:rotate(45deg); margin-right:4px; flex-shrink:0; }
+.code-snippet[open] .code-toggle { transform:rotate(225deg); }
+.code-actions { display:flex; justify-content:flex-end; padding:7px 10px 0; border-top:1px solid var(--line); }
+.copy-code { min-height:32px; font: .78rem var(--mono); color:var(--accent); }
+.code-snippet pre { overflow:auto; margin:0; padding:13px 15px 17px; tab-size:4; }
+.code-snippet code { font: .83rem/1.5 var(--mono); color:var(--paper); }
+.github-links { display:flex; flex-wrap:wrap; gap:9px; }
+.github-code-btn { display:inline-flex; align-items:center; padding:5px 0; margin-right:7px; border-bottom:1px solid var(--line); color:var(--accent); font: .85rem/1.5 var(--mono); overflow-wrap:anywhere; }
+.level-changes { margin:10px 14px; }
+.audio-section { border:1px solid var(--line); background:var(--panel); padding:15px; }
+.audio-player+.audio-player { margin-top:12px; }
+.audio-player p { margin:5px 0; }
+@media(max-width:900px) {
+  .mechanic-layout { grid-template-columns:minmax(0,1fr); gap:24px; }
+  .mechanic-video { width:100%; max-width:700px; margin-inline:auto; }
+  .mechanic-tab,.level-tab,.copy-code { min-height:44px; }
+}
+@media(max-width:580px) {
+  .technical { padding-block:24px 48px; }
+  .mechanics-title { font-size:clamp(2.7rem,10vw,3.6rem); }
+  .mechanic-tabs { gap:6px; padding-block:18px; }
+  .mechanic-tab,.level-tab { padding-inline:10px; }
+  .mechanic-description h2 { overflow-wrap:anywhere; }
+}

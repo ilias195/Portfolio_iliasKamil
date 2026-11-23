@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="nl" data-scene="wintermist" data-palette="ijsblauw"><head>
+<meta charset="utf-8"><meta name="portfolio-versie" content="route-naar-mijn-horrorstudio"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#11171d"><meta name="description" content="Voor het springen gebruik ik de physics van Unity. In het ruimtethema zet ik de zwaartekracht lager. Zo voelt hetzelfde personage in een ander level ineens veel lichter aan."><title>Starlight Forest · Mijn bijdrage · Ilias Kamil</title>
+<link rel="icon" type="image/png" href="assets/ik.png"><link rel="preload" href="assets/fonts/display.woff" as="font" type="font/woff" crossorigin><link rel="stylesheet" href="assets/site.css?v=route-naar-mijn-horrorstudio"><link rel="stylesheet" href="assets/mechanics.css?v=route-naar-mijn-horrorstudio"><link rel="stylesheet" href="assets/mechanics-scenes.css?v=route-naar-mijn-horrorstudio"><script src="assets/site.js?v=route-naar-mijn-horrorstudio" defer></script><script src="meekijken.js" defer></script></head>
+<body class="mechanics-view starlightforest"><a class="skip" href="#inhoud">Naar de inhoud</a>
+<header class="mast"><div class="mast-inner">
+  <a class="identity" href="index.html" aria-label="Ilias Kamil, home"><span class="monogram" aria-hidden="true">IK</span><span class="identity-name">ILIAS KAMIL</span></a>
+  <div class="power" role="meter" aria-label="Camerabatterij bij het scrollen" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" title="De camerabatterij loopt leeg tijdens het scrollen"><span class="battery" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="power-value" aria-hidden="true">100%</span></div>
+  <nav class="site-nav" id="navigatie" aria-label="Hoofdnavigatie"><a href="index.html">Home</a>
+<a href="about.html">Over mij</a>
+<a href="myprojects.html" aria-current="page">Projecten</a>
+<a href="#contact">Contact</a></nav>
+  <button class="scene-trigger" type="button" aria-haspopup="dialog" aria-controls="sfeerkeuze" data-scene-open><span class="symbol" aria-hidden="true">&#xf1de;</span><span>Sfeermodus</span></button>
+  <button class="menu-trigger" type="button" aria-expanded="false" aria-controls="navigatie" aria-label="Menu openen"><span class="symbol" aria-hidden="true">&#xf0c9;</span></button>
+</div></header><main id="inhoud" tabindex="-1"><div class="wrap technical"><a class="breadcrumb" href="starlightforest.html"><span class="symbol" aria-hidden="true">&#xf07c;</span> Starlight Forest</a><section class="mechanics-page">
+
+        <h1 class="mechanics-title">Mijn bijdrage<span class="accent-dot">.</span></h1>
+        <p class="mechanics-subtitle">De gameplay en systemen die ik voor Starlight Forest heb ontwikkeld.</p>
+
+        
+        <div class="mechanic-tabs">
+            <button class="mechanic-tab active" type="button">Movement System</button>
+            <button class="mechanic-tab" type="button">Enemy Behaviour</button>
+            <button class="mechanic-tab" type="button">Coins UI</button>
+            <button class="mechanic-tab" type="button">Healthbar UI</button>
+        </div>
+
+        
+        <div class="mechanic-content active">
+
+            <div class="level-tabs">
+                <button class="level-tab active" type="button">Level 1</button>
+                <button class="level-tab" type="button">Level 2</button>
+                <button class="level-tab" type="button">Level 3</button>
+            </div>
+
+            <div class="level-content active">
+
+                <div class="mechanic-layout">
+                    <div class="mechanic-video">
+                        <img src="Videos/Jump/level.gif" alt="Het personage rent en springt over de platforms van level 1." width="560" height="341" style="height:auto" loading="lazy" decoding="async">
+                    </div>
+                    <div class="mechanic-description">
+                        <h2>Movement System - Level 1</h2>
+                        <p>
+                            Voor level 1 heb ik een 2D movement systeem ontwikkeld met behulp van Rigidbody2D
+                            physics.
+                            De speler beweegt horizontaal via input en kan springen met een ground check gebaseerd
+                            op
+                            Physics2D.OverlapCircle. Daarnaast heb ik een double jump mechaniek toegevoegd via een
+                            extraJumpValue. Ik heb bewust gekozen voor een physics-based aanpak in plaats van
+                            transform-beweging, zodat botsingen en interacties stabiel en realistisch blijven. Alle
+                            belangrijke waarden zoals moveSpeed en jumpForce zijn instelbaar in de Inspector, zodat
+                            het
+                            systeem flexibel blijft.
+                        </p>
+                        
+
+                        <div class="code-snippets-section">
+
+                            <h3 class="code-snippets-title">Codefragmenten</h3>
+                            
+
+                            <details class="code-snippet">
+
+                                <summary class="code-header">
+                                    <span>PlayerMovement.cs — Horizontal Movement</span>
+                                    <span class="code-toggle"></span>
+                                </summary>
+
+                                <div class="code-actions">
+                                    <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                                </div>
+
+                                <pre><code>private void FixedUpdate()
+{
+    rb.linearVelocity = new Vector2(
+        MoveInput * moveSpeed,
+        rb.linearVelocity.y
+    );
+}</code></pre>
+
+                            </details>
+
+
+                            
+
+                            <details class="code-snippet">
+
+                                <summary class="code-header">
+                                    <span>PlayerJump.cs — Jump &amp; Ground Check</span>
+                                    <span class="code-toggle"></span>
+                                </summary>
+
+                                <div class="code-actions">
+                                    <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                                </div>
+
+                                <pre><code>private void Update()
+{
+    if (isGrounded)
+    {
+        extraJumps = extraJumpValue;
+    }
+
+    if (Input.GetKeyDown(keyboardJumpKey) || Input.GetKeyDown(arcadeJumpKey))
+    {
+        if (isGrounded || extraJumps &gt; 0)
+        {
+            rb.linearVelocity = new Vector2(
+                rb.linearVelocity.x,
+                jumpForce
+            );
+
+            if (!isGrounded)
+            {
+                extraJumps--;
+            }
+        }
+    }
+}
+
+private void FixedUpdate()
+{
+    isGrounded = Physics2D.OverlapCircle(
+        groundCheck.position,
+        groundRadius,
+        groundLayer
+    );
+}</code></pre>
+
+                            </details>
+                        </div>
+                        
+
+                        <div class="github-links">
+
+                            <a href="https://github.com/ilias195/StarlightForest-EndlessRunner/blob/main/Assets/Scripts/Platformer/Movement/PlayerMovement.cs" class="github-code-btn" target="_blank" rel="noopener">PlayerMovement.cs</a>
+
+                            <a href="https://github.com/ilias195/StarlightForest-EndlessRunner/blob/main/Assets/Scripts/Platformer/Movement/PlayerJump.cs" class="github-code-btn" target="_blank" rel="noopener">PlayerJump.cs</a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="level-content">
+                <div class="mechanic-layout">
+                    <div class="mechanic-video">
+                        <img src="Videos/Jump/space-level.gif" alt="Het personage blijft in het ruimtelevel langer in de lucht na een sprong." width="560" height="341" style="height:auto" loading="lazy" decoding="async">
+                    </div>
+                    <div class="mechanic-description">
+                        <h2>Movement System - Level 2</h2>
+                        <p>
+                            Voor Level 2 heb ik hetzelfde movement- en jumpsysteem
+                            hergebruikt als in Level 1.
+
+                            Het belangrijkste verschil is dat ik de Gravity Scale
+                            van de Rigidbody2D heb aangepast via de Unity Inspector.
+
+                            Hierdoor blijft de speler langer in de lucht en voelt
+                            de beweging lichter en zwevender aan, zonder dat ik
+                            de bestaande C#-scripts hoefde aan te passen.
+                        </p>
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>Rigidbody2D — Gravity Scale</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="level-changes">
+                                <p>
+                                    De zwaartekracht is aangepast via de
+                                    Rigidbody2D-component in de Unity Inspector.
+                                    De movement- en jumpscripts zijn hergebruikt
+                                    zonder wijzigingen.
+                                </p>
+                            </div>
+
+                        </details>
+                    </div>
+                </div>
+            </div>
+
+            <div class="level-content">
+                <div class="mechanic-layout">
+                    <div class="mechanic-video">
+                        <img src="Videos/Jump/level3NatureJump.gif" alt="Het personage springt tussen platforms in het natuurlevel." width="560" height="350" style="height:auto" loading="lazy" decoding="async">
+                    </div>
+                    <div class="mechanic-description">
+                        <h2>Movement System - Level 3</h2>
+                        <p>
+                            In Level 3 heb ik hetzelfde movement- en jumpsysteem hergebruikt als in de voorgaande
+                            levels. Ik heb geen nieuwe aanpassingen aan de scripts gedaan, omdat de bestaande besturing
+                            goed werkte voor dit level. Hierdoor blijft de code overzichtelijk en kan ik hetzelfde
+                            systeem in meerdere levels gebruiken.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        
+        <div class="mechanic-content">
+
+            <div class="level-tabs">
+                <button class="level-tab active" type="button">Level 1</button>
+                <button class="level-tab" type="button">Level 2</button>
+                <button class="level-tab" type="button">Level 3</button>
+            </div>
+
+            <div class="level-content active">
+
+                <div class="mechanic-layout">
+                    <div class="mechanic-video">
+                        <img src="Videos/EnemyBehaviour/level1EnemyBehaviourVersie3.gif" alt="De vijanden volgen hun patrouilleroute in level 1." width="560" height="342" style="height:auto" loading="lazy" decoding="async">
+                    </div>
+                    <div class="mechanic-description">
+                        <h2 class="enemy-title">
+                            <img src="Img/Enemy/Enemy-level1.webp" class="enemy-icon" loading="lazy" alt="">
+                            Enemy Behaviour - Level 1
+                        </h2>
+                        <p>
+                            Voor Level 1 heb ik een enemy-systeem ontwikkeld waarbij vijanden automatisch tussen
+                            verschillende waypoints bewegen.
+
+                            Met Vector2.MoveTowards bewegen de enemies tussen deze punten. Daarnaast heb ik een
+                            detectiesysteem toegevoegd dat de afstand tussen de enemy en de speler controleert.
+
+                            Wanneer de speler dichtbij genoeg komt, begint de enemy hem te achtervolgen. Als de speler
+                            binnen de attack range komt, wordt de attack-status geactiveerd.
+
+                            Door gebruik te maken van verschillende ranges kan ik eenvoudig bepalen wanneer een enemy
+                            patrouilleert, achtervolgt of in de aanvalstatus komt.
+                        </p>
+                        
+
+<div class="code-snippets-section">
+
+    <h3 class="code-snippets-title">Codefragmenten</h3>
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>EnemyWalk.cs — Enemy Detection</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>protected override void EnemyBehaviour()
+{
+    float distance = Vector2.Distance(
+        transform.position,
+        player.position
+    );
+
+    isChasing = false;
+    isAttacking = false;
+
+    if (distance &lt;= attackRange)
+    {
+        isChasing = true;
+        isAttacking = true;
+    }
+    else if (distance &lt;= chaseRange)
+    {
+        isChasing = true;
+        Chase();
+    }
+    else
+    {
+        Patrol();
+    }
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>EnemyWalk.cs — Patrol &amp; Chase</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>private void Patrol()
+{
+    if (waypoints.Length &lt; 2) return;
+
+    Transform target = waypoints[currentIndex];
+
+    transform.position = Vector2.MoveTowards(
+        transform.position,
+        target.position,
+        patrolSpeed * Time.deltaTime
+    );
+
+    if (Vector2.Distance(transform.position, target.position) &lt; 0.05f)
+    {
+        if (currentIndex == waypoints.Length - 1)
+            direction = -1;
+        else if (currentIndex == 0)
+            direction = 1;
+
+        currentIndex += direction;
+    }
+}
+
+private void Chase()
+{
+    transform.position = Vector2.MoveTowards(
+        transform.position,
+        player.position,
+        chaseSpeed * Time.deltaTime
+    );
+}</code></pre>
+
+                        </details>
+</div>
+                        
+
+                        <div class="github-links">
+
+                            <a href="https://github.com/ilias195/StarlightForest-EndlessRunner/blob/main/Assets/Scripts/Platformer/Enemy/EnemyWalk.cs" class="github-code-btn" target="_blank" rel="noopener">Bekijk EnemyWalk.cs op GitHub</a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="level-content">
+                <div class="mechanic-layout">
+                    <div class="mechanic-video">
+                        <img src="Videos/EnemyBehaviour/level2EnemyBehaviourVersie3.gif" alt="De patrouilleroute van de vijanden in het ruimtelevel." width="480" height="293" style="height:auto" loading="lazy" decoding="async">
+                    </div>
+                    <div class="mechanic-description">
+                        <h2 class="enemy-title">
+                            <img src="Img/Enemy/Octopus.webp" class="enemy-icon" loading="lazy" alt="">
+                            Enemy Behaviour - Level 2
+                        </h2>
+                        <p>
+                            In Level 2 heb ik hetzelfde EnemyWalk-script hergebruikt als in Level 1. Het verschil zit in
+                            de patrouilleroutes van de enemies. Door de waypoints (lege GameObjects) op andere plekken
+                            in de Unity-scene te plaatsen, kan ik bepalen welke route de enemies volgen. Hierdoor
+                            krijgen de vijanden een ander bewegingspatroon zonder dat ik de bestaande code hoef aan te
+                            passen.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="level-content">
+                <div class="mechanic-layout">
+                    <div class="mechanic-video">
+                        <img src="Videos/EnemyBehaviour/level3EnemyBehaviourVersie3.gif" alt="De bewegingsroute van de bij in het natuurlevel." width="560" height="342" style="height:auto" loading="lazy" decoding="async">
+                    </div>
+                    <div class="mechanic-description">
+                        <h2 class="enemy-title-bee">
+                            <img src="Img/Enemy/bee-.webp" class="enemy-icon" loading="lazy" alt="">
+
+                            Enemy Behaviour - Level 3
+                        </h2>
+                        <p>
+                            Ook in Level 3 heb ik hetzelfde EnemyWalk-script gebruikt. Voor dit level heb ik de
+                            waypoints anders geplaatst om de patrouilleroutes aan te passen aan de omgeving. Hierdoor
+                            moet de speler beter letten op de bewegingen van de enemies. Het voordeel is dat ik
+                            verschillende patrouilleroutes kan maken zonder nieuwe scripts te schrijven.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        
+        <div class="mechanic-content">
+
+            <div class="level-tabs">
+                <button class="level-tab active" type="button">Level 1</button>
+                <button class="level-tab" type="button">Level 2</button>
+                <button class="level-tab" type="button">Level 3</button>
+            </div>
+
+            <div class="level-content active">
+                <div class="mechanic-layout">
+                    <div class="mechanic-video">
+                        <img src="Videos/Coins/Level1-CoinMechanic.gif" alt="Het personage pakt munten op in level 1." width="560" height="347" style="height:auto" loading="lazy" decoding="async">
+                    </div>
+                    <div class="mechanic-description">
+                        <h2 class="coin-title">
+                            <img src="Img/icoons/coinIcoon.webp" class="coin-icon" loading="lazy" alt="">
+                            Coins - Level 1
+                        </h2>
+                        <p>
+                            Voor Level 1 heb ik een coin-systeem gemaakt waarmee de speler coins kan verzamelen. Met
+                            OnTriggerEnter2D controleer ik of de speler een coin raakt. Wanneer dit gebeurt, wordt het
+                            aantal coins verhoogd, een geluid afgespeeld en de coin verwijderd.
+
+                            Daarnaast heb ik met TextMeshPro een UI-counter gemaakt die het aantal verzamelde coins op
+                            het scherm bijwerkt. Hierdoor kan de speler tijdens het spelen zien hoeveel coins hij heeft
+                            verzameld.
+                        </p>
+                        
+
+<div class="code-snippets-section">
+
+    <h3 class="code-snippets-title">Codefragmenten</h3>
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>Coin.cs — Coin Collection</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>private void OnTriggerEnter2D(Collider2D collision)
+{
+    if (collision.CompareTag("Player"))
+    {
+        PlayerMovement playerCoin =
+            collision.GetComponent&lt;PlayerMovement&gt;();
+
+        if (playerCoin != null)
+        {
+            playerCoin.coins++;
+
+            if (AudioManager.audioCurrent != null &amp;&amp; coinClip != null)
+            {
+                AudioManager.audioCurrent.PlaySound(coinClip);
+            }
+
+            Destroy(gameObject);
+        }
+    }
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>CoinCounterUI.cs — UI Update</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>[SerializeField] private PlayerMovement playerCoin;
+[SerializeField] private TextMeshProUGUI coinText;
+
+[SerializeField] private string labelName = "coins";
+
+private void Update()
+{
+    coinText.text = labelName + ": " + playerCoin.coins;
+}</code></pre>
+
+                        </details>
+</div>
+                        
+
+                        <div class="github-links">
+
+                            <a href="https://github.com/ilias195/StarlightForest-EndlessRunner/blob/main/Assets/Scripts/Platformer/Coin/Coin.cs" class="github-code-btn" target="_blank" rel="noopener">Bekijk Coin.cs op GitHub</a>
+
+                            <a href="https://github.com/ilias195/StarlightForest-EndlessRunner/blob/main/Assets/Scripts/Platformer/Coin/CoinCounterUI.cs" class="github-code-btn" target="_blank" rel="noopener">Bekijk CoinCounterUI.cs op GitHub</a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="level-content">
+                <div class="mechanic-layout">
+                    <div class="mechanic-video">
+                        <img src="Videos/Coins/level2CoinsMechanic.gif" alt="Sterren verzamelen in het ruimtelevel van Starlight Forest." width="480" height="296" style="height:auto" loading="lazy" decoding="async">
+                    </div>
+                    <div class="mechanic-description">
+                        <h2 class="coin-title">
+                            <img src="Img/icoons/staricoon.webp" class="coin-icon" loading="lazy" alt="">
+                            Coins - Level 2
+                        </h2>
+                        <p>
+                            In Level 2 heb ik hetzelfde coin-systeem gebruikt als in Level 1. Alleen de afbeeldingen van
+                            de coins zijn aangepast aan het space-thema. De scripts zijn hetzelfde gebleven, waardoor ik
+                            het bestaande systeem kon hergebruiken zonder nieuwe code te schrijven.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="level-content">
+                <div class="mechanic-layout">
+                    <div class="mechanic-video">
+                        <img src="Videos/Coins/level3Coins.gif" alt="Het personage verzamelt wortels in het natuurlevel." width="560" height="350" style="height:auto" loading="lazy" decoding="async">
+                    </div>
+                    <div class="mechanic-description">
+                        <h2 class="coin-title">
+                            <img src="Img/icoons/carrot-icoon.webp" class="coin-icon" loading="lazy" alt="">
+                            Coins - Level 3
+                        </h2>
+                        <p>
+                            In Level 3 heb ik opnieuw hetzelfde coin-systeem gebruikt. Voor dit level heb ik de
+                            afbeeldingen vervangen door coins die beter bij de natuurlijke omgeving passen. De werking
+                            van het verzamelen en de UI-counter is hetzelfde gebleven.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        
+        <div class="mechanic-content">
+
+            <div class="level-tabs">
+                <button class="level-tab active" type="button">Level 1</button>
+                <button class="level-tab" type="button">Level 2</button>
+                <button class="level-tab" type="button">Level 3</button>
+            </div>
+
+            <div class="level-content active">
+                <div class="mechanic-layout">
+                    <div class="mechanic-video">
+                        <img src="Videos/Healthbar/Level1Healthbar.gif" alt="De levensbalk verandert wanneer de speler schade krijgt in level 1." width="560" height="352" style="height:auto" loading="lazy" decoding="async">
+                    </div>
+                    <div class="mechanic-description">
+                        <h2 class="healthbar-title">
+                            <img src="Img/Healthbars/healthbar_nature.webp" alt="healthbar icon" class="healthbar-small-icon" loading="lazy">
+
+                            Healthbar - Level 1
+                        </h2>
+                        <p>
+                            Voor Level 1 heb ik een health-systeem gemaakt waarmee de speler schade kan krijgen en
+                            levens kan verliezen.
+
+                            Met PlayerHealth houd ik bij hoeveel HP de speler heeft. Wanneer de speler schade krijgt,
+                            wordt de HP verlaagd.
+
+                            Daarnaast heb ik met Unity UI en TextMeshPro een healthbar gemaakt. De balk wordt aangepast
+                            aan de huidige HP en toont hoeveel levens de speler nog over heeft.
+                        </p>
+                        
+
+<div class="code-snippets-section">
+
+    <h3 class="code-snippets-title">Codefragmenten</h3>
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>PlayerHealth.cs — Health &amp; Damage</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>private void Start()
+{
+    currentHealth = maxHealth;
+    healthbar.SetMaxHealth(maxHealth);
+}
+
+public void TakeDamage(int amount)
+{
+    if (isDead) return;
+
+    if (shieldActive)
+        amount /= 2;
+
+    currentHealth -= amount;
+
+    healthbar.SetHealth(currentHealth);
+
+    if (currentHealth &lt;= 0)
+    {
+        Die();
+    }
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+                                <span>HealthbarUI.cs — Healthbar Update</span>
+                                <span class="code-toggle"></span>
+                            </summary>
+
+                            <div class="code-actions">
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+                            </div>
+
+                            <pre><code>private void Update()
+{
+    float current = playerHealth.CurrentHealth;
+    float max = playerHealth.MaxHealth;
+
+    fillImage.fillAmount = current / max;
+
+    healthText.text = current + " / " + max;
+}</code></pre>
+
+                        </details>
+</div>
+                        
+
+                        <div class="github-links">
+
+                            <a href="https://github.com/ilias195/StarlightForest-EndlessRunner/blob/main/Assets/Scripts/Platformer/Health/PlayerHealth.cs" class="github-code-btn" target="_blank" rel="noopener">Bekijk PlayerHealth.cs op GitHub</a>
+
+                            <a href="https://github.com/ilias195/StarlightForest-EndlessRunner/blob/main/Assets/Scripts/Platformer/Health/HealthbarUI.cs" class="github-code-btn" target="_blank" rel="noopener">Bekijk HealthbarUI.cs op GitHub</a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="level-content">
+                <div class="mechanic-layout">
+                    <div class="mechanic-video">
+                        <img src="Videos/Healthbar/Level2Healthbar.gif" alt="De planeetvormige levensmeter in het ruimtelevel." width="560" height="344" style="height:auto" loading="lazy" decoding="async">
+                    </div>
+                    <div class="mechanic-description">
+                        <h2 class="healthbar-title">
+                            <img src="Img/Healthbars/healthbar_planet.webp" alt="healthbar icon" class="healthbar-small-icon" loading="lazy">
+
+                            Healthbar - Level 2
+                        </h2>
+                        <p>
+                            In Level 2 heb ik hetzelfde healthbar-systeem hergebruikt als in Level 1. Het verschil is
+                            dat de healthbar nu de vorm van een planeet heeft, passend bij het space-thema.
+
+                            Daarnaast heb ik via de Unity Inspector de Fill-instellingen aangepast. Hierdoor loopt de
+                            healthbar van boven naar beneden leeg in plaats van van links naar rechts. De bestaande
+                            C#-scripts hoefde ik hiervoor niet aan te passen.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="level-content">
+                <div class="mechanic-layout">
+                    <div class="mechanic-video">
+                        <img src="Videos/Healthbar/Level3Healthbar.gif" alt="De levensmeter van de speler in het natuurlevel." width="560" height="350" style="height:auto" loading="lazy" decoding="async">
+                    </div>
+                    <div class="mechanic-description">
+                        <h2 class="healthbar-title">
+                            <img src="Img/Healthbars/healthbar_nature.webp" alt="healthbar icon" class="healthbar-small-icon" loading="lazy">
+
+                            Healthbar - Level 3
+                        </h2>
+                        <p>
+                            In Level 3 heb ik dezelfde healthbar gebruikt als in Level 1, zowel qua vormgeving als
+                            werking. De healthbar loopt van links naar rechts leeg wanneer de speler schade krijgt.
+
+                            Omdat het bestaande systeem goed werkte, heb ik geen aanpassingen aan de scripts hoeven
+                            maken.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+    </div></main><footer id="contact" class="footer"><div class="wrap footer-inner"><div><p class="eyebrow"><span class="rule"></span>Contact</p><h2>Neem contact op<span class="accent-dot">.</span></h2><a class="email-link" href="mailto:iliask195@gmail.com"><span class="symbol" aria-hidden="true">&#xf0e0;</span> iliask195@gmail.com</a></div><div class="socials"><a href="https://github.com/ilias195" target="_blank" rel="noopener"><span class="brand-symbol" aria-hidden="true">&#xf09b;</span> GitHub</a><a href="https://www.linkedin.com/in/ilias-kamil-03182b383/" target="_blank" rel="noopener"><span class="brand-symbol" aria-hidden="true">&#xf08c;</span> LinkedIn</a><a href="Img/CV_Ilias_Kamil_Word.pdf" target="_blank" rel="noopener"><span class="symbol" aria-hidden="true">&#xf15c;</span> Mijn cv</a></div></div><div class="wrap footer-base"><span>Ilias Kamil · Game developer</span><span><span class="symbol" aria-hidden="true">&#xf3c5;</span> Amsterdam, NL</span></div></footer><dialog class="scene-dialog" id="sfeerkeuze" aria-labelledby="sfeer-titel">
+      <div class="dialog-inner">
+        <div class="dialog-top"><div><p class="eyebrow"><span class="rule"></span>Wintermist</p><h2 id="sfeer-titel">Sfeermodus<span class="accent-dot">.</span></h2></div>
+          <button class="dialog-close" type="button" aria-label="Sfeermodus sluiten" data-scene-close><span class="symbol" aria-hidden="true">&#xf00d;</span></button></div>
+        <div class="style-row"><h3>Kleuraccent</h3><span class="style-sample"><img src="assets/paletten/ijsblauw.png" alt="" width="54" height="12">IJsblauw</span></div>
+        <div class="style-row"><div><h3>Veldlamp</h3><p>Schijn op het sneeuwpad naar de hut. De veldlamp is geïnspireerd op Metro Awakening.</p></div><button class="lamp-control" type="button" data-lamp-control aria-label="Veldlamp" aria-controls="lamp-proef" aria-pressed="true" hidden><span class="symbol" aria-hidden="true">&#xf0eb;</span> Veldlamp <span data-lamp-state>Aan</span></button></div>
+        <div class="lamp-preview lamp-on" id="lamp-proef" role="img" aria-label="Een besneeuwd pad naar een berghut in de wintermist" data-lamp-scene><span class="lamp-light" aria-hidden="true"></span></div>
+        <div class="dialog-foot"><a href="index.html#wintermist" data-view-lamp>Bekijk het sneeuwpad</a></div>
+      </div></dialog></body></html>

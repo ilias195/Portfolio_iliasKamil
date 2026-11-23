@@ -1,0 +1,12 @@
+{
+  "name": "portfolio-ilias-kamil",
+  "compatibility_date": "2026-11-22",
+  "build": {
+    "command": "python3 -B src/build.py",
+    "watch_dir": "src"
+  },
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "auto-trailing-slash"
+  }
+}

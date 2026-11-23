@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="nl" data-scene="wintermist" data-palette="ijsblauw"><head>
+<meta charset="utf-8"><meta name="portfolio-versie" content="route-naar-mijn-horrorstudio"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#11171d"><meta name="description" content="Ik liet de boer een route door de tuin volgen. Bij bepaalde punten stopt hij om te harken of te graven. Animatie en taak wisselen met hem mee."><title>Vertical Slice: Untitled Goose · Mijn bijdrage · Ilias Kamil</title>
+<link rel="icon" type="image/png" href="assets/ik.png"><link rel="preload" href="assets/fonts/display.woff" as="font" type="font/woff" crossorigin><link rel="stylesheet" href="assets/site.css?v=route-naar-mijn-horrorstudio"><link rel="stylesheet" href="assets/mechanics.css?v=route-naar-mijn-horrorstudio"><link rel="stylesheet" href="assets/mechanics-scenes.css?v=route-naar-mijn-horrorstudio"><script src="assets/site.js?v=route-naar-mijn-horrorstudio" defer></script><script src="meekijken.js" defer></script></head>
+<body class="mechanics-view untitledgoose"><a class="skip" href="#inhoud">Naar de inhoud</a>
+<header class="mast"><div class="mast-inner">
+  <a class="identity" href="index.html" aria-label="Ilias Kamil, home"><span class="monogram" aria-hidden="true">IK</span><span class="identity-name">ILIAS KAMIL</span></a>
+  <div class="power" role="meter" aria-label="Camerabatterij bij het scrollen" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" title="De camerabatterij loopt leeg tijdens het scrollen"><span class="battery" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="power-value" aria-hidden="true">100%</span></div>
+  <nav class="site-nav" id="navigatie" aria-label="Hoofdnavigatie"><a href="index.html">Home</a>
+<a href="about.html">Over mij</a>
+<a href="myprojects.html" aria-current="page">Projecten</a>
+<a href="#contact">Contact</a></nav>
+  <button class="scene-trigger" type="button" aria-haspopup="dialog" aria-controls="sfeerkeuze" data-scene-open><span class="symbol" aria-hidden="true">&#xf1de;</span><span>Sfeermodus</span></button>
+  <button class="menu-trigger" type="button" aria-expanded="false" aria-controls="navigatie" aria-label="Menu openen"><span class="symbol" aria-hidden="true">&#xf0c9;</span></button>
+</div></header><main id="inhoud" tabindex="-1"><div class="wrap technical"><a class="breadcrumb" href="untitledgoose.html"><span class="symbol" aria-hidden="true">&#xf07c;</span> Vertical Slice: Untitled Goose</a><section class="mechanics-page">
+
+        <h1 class="mechanics-title">Mijn bijdrage<span class="accent-dot">.</span></h1>
+
+        <p class="mechanics-subtitle">De gameplay en systemen die ik voor Vertical Slice: Untitled Goose heb ontwikkeld.</p>
+
+
+        
+
+        <div class="mechanic-content active">
+
+            <div class="mechanic-layout">
+
+
+                
+
+                <div class="mechanic-video">
+
+                    <img src="Videos/Farmer/Farmer.gif" alt="De boer loopt over zijn vaste route door de moestuin en stopt bij werkplekken." width="560" height="373" style="height:auto" loading="lazy" decoding="async">
+
+                </div>
+
+
+                
+
+                <div class="mechanic-description">
+
+                    <div class="farmer-header">
+
+                        <img src="Img/icoons/Farmer.webp" class="farmer-icon" alt="Farmer mechanic icon" loading="lazy">
+
+                        <h2>Farmer Walk</h2>
+
+                    </div>
+
+                    <p>
+                        Ik heb de Farmer Walk gemaakt met waypoints in de scene.
+
+                        De farmer beweegt automatisch tussen verschillende
+                        punten in het level. Hierdoor kan ik makkelijk bepalen
+                        welke route hij volgt en hoe snel hij beweegt.
+
+                        Tijdens het lopen wordt de walk-animatie afgespeeld.
+
+                        Bij bepaalde waypoints voert de farmer ook acties uit,
+                        zoals graven of harken. Deze acties worden geactiveerd
+                        op basis van zijn locatie, waardoor de farmer
+                        automatisch de juiste taak uitvoert.
+                    </p>
+
+
+                    
+
+                    <div class="code-snippets-section">
+
+                        <h3 class="code-snippets-title">Codefragmenten</h3>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+
+                                <span>
+                                    Movement.cs — Waypoint Movement
+                                </span>
+
+                                <span class="code-toggle"></span>
+
+                            </summary>
+
+                            <div class="code-actions">
+
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+
+                            </div>
+
+                            <pre><code>private void Update()
+{
+    if (isWorking)
+    {
+        farmerAnimation.SetMoving(false);
+        return;
+    }
+
+    Vector3 direction = target.position - transform.position;
+
+    if (direction.magnitude &gt; 0.4f)
+    {
+        farmerAnimation.SetMoving(true);
+
+        transform.Translate(
+            direction.normalized * _speed * Time.deltaTime,
+            Space.World
+        );
+
+        direction.y = 0;
+
+        if (direction.sqrMagnitude &gt; 0.001f)
+        {
+            Quaternion targetRotation =
+                Quaternion.LookRotation(direction);
+
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                targetRotation,
+                5f * Time.deltaTime
+            );
+        }
+    }
+    else
+    {
+        farmerAnimation.SetMoving(false);
+        StartTaskWayPoint();
+    }
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+
+                                <span>
+                                    Movement.cs — Task System
+                                </span>
+
+                                <span class="code-toggle"></span>
+
+                            </summary>
+
+                            <div class="code-actions">
+
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+
+                            </div>
+
+                            <pre><code>void StartTaskWayPoint()
+{
+    WaypointTask waypointTask =
+        target.GetComponent&lt;WaypointTask&gt;();
+
+    if (waypointTask == null ||
+        waypointTask.taskType == FarmerTask.None)
+    {
+        GetNextWayPoint();
+        return;
+    }
+
+    if (waypointTask.taskType == FarmerTask.Digging)
+    {
+        currentTask = new DiggingTask();
+    }
+    else if (waypointTask.taskType == FarmerTask.Rake)
+    {
+        currentTask = new RakeTask();
+    }
+
+    farmerAnimation.PlayTaskAnimation(currentTask.TaskType);
+
+    isWorking = true;
+
+    Invoke(nameof(FinishTask), 5f);
+}
+
+void FinishTask()
+{
+    farmerAnimation.StopTaskAnimation();
+
+    isWorking = false;
+    currentTask = null;
+
+    GetNextWayPoint();
+}
+
+void GetNextWayPoint()
+{
+    wavePointIndex++;
+
+    if (wavePointIndex &gt;= wayPoints.Points.Count)
+    {
+        wavePointIndex = 0;
+    }
+
+    target = wayPoints.Points[wavePointIndex];
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+
+                                <span>
+                                    FarmerAnimation.cs — Animation Control
+                                </span>
+
+                                <span class="code-toggle"></span>
+
+                            </summary>
+
+                            <div class="code-actions">
+
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+
+                            </div>
+
+                            <pre><code>public void SetMoving(bool moving)
+{
+    animator.SetBool("IsMoving", moving);
+}
+
+public void PlayTaskAnimation(FarmerTask task)
+{
+    animator.SetBool("IsMoving", false);
+    animator.SetBool("IsWorking", true);
+
+    animator.SetBool(
+        "IsRaking",
+        task == FarmerTask.Rake
+    );
+
+    animator.SetBool(
+        "IsDigging",
+        task == FarmerTask.Digging
+    );
+}
+
+public void StopTaskAnimation()
+{
+    animator.SetBool("IsWorking", false);
+    animator.SetBool("IsRaking", false);
+    animator.SetBool("IsDigging", false);
+}</code></pre>
+
+                        </details>
+
+                    </div>
+
+
+                    
+
+                    <div class="github-links">
+
+                        <a href="https://github.com/ilias195/BO-untitled-goose/blob/Develop/Assets/ilias/Scripts/Farmer/Movement/Movement.cs" class="github-code-btn" target="_blank" rel="noopener">Movement.cs</a>
+
+                        <a href="https://github.com/ilias195/BO-untitled-goose/blob/Develop/Assets/ilias/Scripts/Farmer/Movement/WayPoints.cs" class="github-code-btn" target="_blank" rel="noopener">WayPoints.cs</a>
+
+                        <a href="https://github.com/ilias195/BO-untitled-goose/blob/Develop/Assets/ilias/Scripts/Farmer/Animation/FarmerAnimation.cs" class="github-code-btn" target="_blank" rel="noopener">FarmerAnimation.cs</a>
+
+                        <a href="https://github.com/ilias195/BO-untitled-goose/blob/Develop/Assets/ilias/Scripts/Farmer/Task/WaypointTask.cs" class="github-code-btn" target="_blank" rel="noopener">WaypointTask.cs</a>
+
+                        <a href="https://github.com/ilias195/BO-untitled-goose/blob/Develop/Assets/ilias/Scripts/Farmer/Task/FarmerTaskBase.cs" class="github-code-btn" target="_blank" rel="noopener">FarmerTaskBase.cs</a>
+
+                        <a href="https://github.com/ilias195/BO-untitled-goose/blob/Develop/Assets/ilias/Scripts/Farmer/Task/DiggingTask.cs" class="github-code-btn" target="_blank" rel="noopener">DiggingTask.cs</a>
+
+                        <a href="https://github.com/ilias195/BO-untitled-goose/blob/Develop/Assets/ilias/Scripts/Farmer/Task/RakeTask.cs" class="github-code-btn" target="_blank" rel="noopener">RakeTask.cs</a>
+
+                    </div>
+
+
+                </div> 
+
+            </div> 
+
+        </div> 
+
+    </section>
+
+
+    </div></main><footer id="contact" class="footer"><div class="wrap footer-inner"><div><p class="eyebrow"><span class="rule"></span>Contact</p><h2>Neem contact op<span class="accent-dot">.</span></h2><a class="email-link" href="mailto:iliask195@gmail.com"><span class="symbol" aria-hidden="true">&#xf0e0;</span> iliask195@gmail.com</a></div><div class="socials"><a href="https://github.com/ilias195" target="_blank" rel="noopener"><span class="brand-symbol" aria-hidden="true">&#xf09b;</span> GitHub</a><a href="https://www.linkedin.com/in/ilias-kamil-03182b383/" target="_blank" rel="noopener"><span class="brand-symbol" aria-hidden="true">&#xf08c;</span> LinkedIn</a><a href="Img/CV_Ilias_Kamil_Word.pdf" target="_blank" rel="noopener"><span class="symbol" aria-hidden="true">&#xf15c;</span> Mijn cv</a></div></div><div class="wrap footer-base"><span>Ilias Kamil · Game developer</span><span><span class="symbol" aria-hidden="true">&#xf3c5;</span> Amsterdam, NL</span></div></footer><dialog class="scene-dialog" id="sfeerkeuze" aria-labelledby="sfeer-titel">
+      <div class="dialog-inner">
+        <div class="dialog-top"><div><p class="eyebrow"><span class="rule"></span>Wintermist</p><h2 id="sfeer-titel">Sfeermodus<span class="accent-dot">.</span></h2></div>
+          <button class="dialog-close" type="button" aria-label="Sfeermodus sluiten" data-scene-close><span class="symbol" aria-hidden="true">&#xf00d;</span></button></div>
+        <div class="style-row"><h3>Kleuraccent</h3><span class="style-sample"><img src="assets/paletten/ijsblauw.png" alt="" width="54" height="12">IJsblauw</span></div>
+        <div class="style-row"><div><h3>Veldlamp</h3><p>Schijn op het sneeuwpad naar de hut. De veldlamp is geïnspireerd op Metro Awakening.</p></div><button class="lamp-control" type="button" data-lamp-control aria-label="Veldlamp" aria-controls="lamp-proef" aria-pressed="true" hidden><span class="symbol" aria-hidden="true">&#xf0eb;</span> Veldlamp <span data-lamp-state>Aan</span></button></div>
+        <div class="lamp-preview lamp-on" id="lamp-proef" role="img" aria-label="Een besneeuwd pad naar een berghut in de wintermist" data-lamp-scene><span class="lamp-light" aria-hidden="true"></span></div>
+        <div class="dialog-foot"><a href="index.html#wintermist" data-view-lamp>Bekijk het sneeuwpad</a></div>
+      </div></dialog></body></html>

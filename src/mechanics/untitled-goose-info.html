@@ -1,0 +1,278 @@
+<section class="mechanics-page">
+
+        <h1 class="mechanics-title">Mijn bijdrage<span class="accent-dot">.</span></h1>
+
+        <p class="mechanics-subtitle">De gameplay en systemen die ik voor Vertical Slice: Untitled Goose heb ontwikkeld.</p>
+
+
+        
+
+        <div class="mechanic-content active">
+
+            <div class="mechanic-layout">
+
+
+                
+
+                <div class="mechanic-video">
+
+                    <img src="Videos/Farmer/Farmer.gif" alt="De boer loopt over zijn vaste route door de moestuin en stopt bij werkplekken." width="560" height="373" style="height:auto" loading="lazy" decoding="async">
+
+                </div>
+
+
+                
+
+                <div class="mechanic-description">
+
+                    <div class="farmer-header">
+
+                        <img src="Img/icoons/Farmer.webp" class="farmer-icon" alt="Farmer mechanic icon" loading="lazy">
+
+                        <h2>Farmer Walk</h2>
+
+                    </div>
+
+                    <p>
+                        Ik heb de Farmer Walk gemaakt met waypoints in de scene.
+
+                        De farmer beweegt automatisch tussen verschillende
+                        punten in het level. Hierdoor kan ik makkelijk bepalen
+                        welke route hij volgt en hoe snel hij beweegt.
+
+                        Tijdens het lopen wordt de walk-animatie afgespeeld.
+
+                        Bij bepaalde waypoints voert de farmer ook acties uit,
+                        zoals graven of harken. Deze acties worden geactiveerd
+                        op basis van zijn locatie, waardoor de farmer
+                        automatisch de juiste taak uitvoert.
+                    </p>
+
+
+                    
+
+                    <div class="code-snippets-section">
+
+                        <h3 class="code-snippets-title">Codefragmenten</h3>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+
+                                <span>
+                                    Movement.cs — Waypoint Movement
+                                </span>
+
+                                <span class="code-toggle"></span>
+
+                            </summary>
+
+                            <div class="code-actions">
+
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+
+                            </div>
+
+                            <pre><code>private void Update()
+{
+    if (isWorking)
+    {
+        farmerAnimation.SetMoving(false);
+        return;
+    }
+
+    Vector3 direction = target.position - transform.position;
+
+    if (direction.magnitude &gt; 0.4f)
+    {
+        farmerAnimation.SetMoving(true);
+
+        transform.Translate(
+            direction.normalized * _speed * Time.deltaTime,
+            Space.World
+        );
+
+        direction.y = 0;
+
+        if (direction.sqrMagnitude &gt; 0.001f)
+        {
+            Quaternion targetRotation =
+                Quaternion.LookRotation(direction);
+
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                targetRotation,
+                5f * Time.deltaTime
+            );
+        }
+    }
+    else
+    {
+        farmerAnimation.SetMoving(false);
+        StartTaskWayPoint();
+    }
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+
+                                <span>
+                                    Movement.cs — Task System
+                                </span>
+
+                                <span class="code-toggle"></span>
+
+                            </summary>
+
+                            <div class="code-actions">
+
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+
+                            </div>
+
+                            <pre><code>void StartTaskWayPoint()
+{
+    WaypointTask waypointTask =
+        target.GetComponent&lt;WaypointTask&gt;();
+
+    if (waypointTask == null ||
+        waypointTask.taskType == FarmerTask.None)
+    {
+        GetNextWayPoint();
+        return;
+    }
+
+    if (waypointTask.taskType == FarmerTask.Digging)
+    {
+        currentTask = new DiggingTask();
+    }
+    else if (waypointTask.taskType == FarmerTask.Rake)
+    {
+        currentTask = new RakeTask();
+    }
+
+    farmerAnimation.PlayTaskAnimation(currentTask.TaskType);
+
+    isWorking = true;
+
+    Invoke(nameof(FinishTask), 5f);
+}
+
+void FinishTask()
+{
+    farmerAnimation.StopTaskAnimation();
+
+    isWorking = false;
+    currentTask = null;
+
+    GetNextWayPoint();
+}
+
+void GetNextWayPoint()
+{
+    wavePointIndex++;
+
+    if (wavePointIndex &gt;= wayPoints.Points.Count)
+    {
+        wavePointIndex = 0;
+    }
+
+    target = wayPoints.Points[wavePointIndex];
+}</code></pre>
+
+                        </details>
+
+
+                        
+
+                        <details class="code-snippet">
+
+                            <summary class="code-header">
+
+                                <span>
+                                    FarmerAnimation.cs — Animation Control
+                                </span>
+
+                                <span class="code-toggle"></span>
+
+                            </summary>
+
+                            <div class="code-actions">
+
+                                <button type="button" class="copy-code" data-copy="">Kopieer code</button>
+
+                            </div>
+
+                            <pre><code>public void SetMoving(bool moving)
+{
+    animator.SetBool("IsMoving", moving);
+}
+
+public void PlayTaskAnimation(FarmerTask task)
+{
+    animator.SetBool("IsMoving", false);
+    animator.SetBool("IsWorking", true);
+
+    animator.SetBool(
+        "IsRaking",
+        task == FarmerTask.Rake
+    );
+
+    animator.SetBool(
+        "IsDigging",
+        task == FarmerTask.Digging
+    );
+}
+
+public void StopTaskAnimation()
+{
+    animator.SetBool("IsWorking", false);
+    animator.SetBool("IsRaking", false);
+    animator.SetBool("IsDigging", false);
+}</code></pre>
+
+                        </details>
+
+                    </div>
+
+
+                    
+
+                    <div class="github-links">
+
+                        <a href="https://github.com/ilias195/BO-untitled-goose/blob/Develop/Assets/ilias/Scripts/Farmer/Movement/Movement.cs" class="github-code-btn" target="_blank" rel="noopener">Movement.cs</a>
+
+                        <a href="https://github.com/ilias195/BO-untitled-goose/blob/Develop/Assets/ilias/Scripts/Farmer/Movement/WayPoints.cs" class="github-code-btn" target="_blank" rel="noopener">WayPoints.cs</a>
+
+                        <a href="https://github.com/ilias195/BO-untitled-goose/blob/Develop/Assets/ilias/Scripts/Farmer/Animation/FarmerAnimation.cs" class="github-code-btn" target="_blank" rel="noopener">FarmerAnimation.cs</a>
+
+                        <a href="https://github.com/ilias195/BO-untitled-goose/blob/Develop/Assets/ilias/Scripts/Farmer/Task/WaypointTask.cs" class="github-code-btn" target="_blank" rel="noopener">WaypointTask.cs</a>
+
+                        <a href="https://github.com/ilias195/BO-untitled-goose/blob/Develop/Assets/ilias/Scripts/Farmer/Task/FarmerTaskBase.cs" class="github-code-btn" target="_blank" rel="noopener">FarmerTaskBase.cs</a>
+
+                        <a href="https://github.com/ilias195/BO-untitled-goose/blob/Develop/Assets/ilias/Scripts/Farmer/Task/DiggingTask.cs" class="github-code-btn" target="_blank" rel="noopener">DiggingTask.cs</a>
+
+                        <a href="https://github.com/ilias195/BO-untitled-goose/blob/Develop/Assets/ilias/Scripts/Farmer/Task/RakeTask.cs" class="github-code-btn" target="_blank" rel="noopener">RakeTask.cs</a>
+
+                    </div>
+
+
+                </div> 
+
+            </div> 
+
+        </div> 
+
+    </section>
+
+
+    

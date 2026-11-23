@@ -1,0 +1,100 @@
+/* Keep the landscape inside the project page while its content scrolls. */
+.mechanics-view main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  isolation: isolate;
+  background-color: var(--bg);
+}
+
+.mechanics-view main::before,
+.mechanics-view main > .technical {
+  grid-area: 1 / 1;
+  align-self: start;
+}
+
+.mechanics-view main::before {
+  content: "";
+  position: sticky;
+  top: var(--nav-height);
+  height: calc(100vh - var(--nav-height));
+  height: calc(100dvh - var(--nav-height));
+  z-index: -1;
+  pointer-events: none;
+  background-color: #101820;
+  background-image:
+    linear-gradient(180deg, rgb(5 12 18 / 50%), rgb(5 10 16 / 42%) 52%, rgb(5 10 16 / 72%)),
+    radial-gradient(ellipse at 54% 33%, transparent 15%, rgb(3 8 12 / 40%) 100%),
+    var(--mechanics-image);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Bow & Arrow Trials reuses its three trial environments across six mechanics. */
+.mechanics-view.bowarrow main {
+  --mechanics-image: url("../Img/background/trial1background.webp");
+}
+
+.mechanics-view.bowarrow main:has(.mechanic-tabs > .active:is(:nth-child(2), :nth-child(5))) {
+  --mechanics-image: url("../Img/background/trial3background.webp");
+}
+
+.mechanics-view.bowarrow main:has(.mechanic-tabs > .active:is(:nth-child(3), :nth-child(6))) {
+  --mechanics-image: url("../Img/background/trial2background.webp");
+}
+
+/* Read the level from the visible mechanic. Each Starlight tab remembers its level. */
+.mechanics-view.starlightforest main {
+  --mechanics-image: url("../Img/background/background level1.webp");
+}
+
+.mechanics-view.starlightforest main:has(.mechanic-content.active > .level-tabs > .active:nth-child(2)) {
+  --mechanics-image: url("../Img/background/backgroundlevel2.webp");
+}
+
+.mechanics-view.starlightforest main:has(.mechanic-content.active > .level-tabs > .active:nth-child(3)) {
+  --mechanics-image: url("../Img/background/backgroundlevel3.webp");
+}
+
+.mechanics-view.nirvana main {
+  --mechanics-image: url("../Img/background/nirvana2.webp");
+}
+
+.mechanics-view.nirvana main:has(.mechanic-tabs > .active:nth-child(2)) {
+  --mechanics-image: url("../Img/background/Nirvana.webp");
+}
+
+.mechanics-view.untitledgoose main {
+  --mechanics-image: url("../Img/background/UnitledGoose.webp");
+}
+
+.mechanics-view.nova-striker main {
+  --mechanics-image: url("../Img/background/nova-Striker.webp");
+}
+
+.mechanics-view .technical {
+  min-width: 0;
+}
+
+.mechanics-view .breadcrumb,
+.mechanics-view .mechanics-subtitle {
+  color: #e3ebef;
+  text-shadow: 0 1px 4px #070c12;
+}
+
+.mechanics-view .mechanic-description {
+  padding: clamp(17px, 2.5vw, 34px);
+  border: 1px solid var(--line);
+  background: rgb(12 20 27 / 91%);
+}
+
+.mechanics-view .mechanic-tab.active,
+.mechanics-view .level-tab.active {
+  background-color: rgb(20 33 44 / 96%);
+}
+
+@media (forced-colors: active) {
+  .mechanics-view main::before {
+    background: Canvas;
+  }
+}
