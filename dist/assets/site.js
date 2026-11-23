@@ -85,6 +85,14 @@ lampScenes.forEach(scene => {
   movableLamp.addEventListener('change', resetBeamPosition);
 });
 
+const inspirationRow = document.querySelector('.inspiration-grid');
+if (inspirationRow && 'ResizeObserver' in window) {
+  const rowObserver = new ResizeObserver(() => {
+    inspirationRow.tabIndex = inspirationRow.scrollWidth > inspirationRow.clientWidth + 1 ? 0 : -1;
+  });
+  rowObserver.observe(inspirationRow);
+}
+
 const covers = document.querySelectorAll('.inspire-pic');
 if (covers.length && 'IntersectionObserver' in window) {
   const observer = new IntersectionObserver(entries => {
