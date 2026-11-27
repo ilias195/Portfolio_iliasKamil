@@ -1,0 +1,215 @@
+/* Camera effects for the portfolio's existing pages. */
+@media (prefers-reduced-motion: no-preference) and (min-width: 581px) and (min-height: 581px) {
+  :root { --camera-ease: cubic-bezier(.2,.7,.1,1); }
+  .rec i { animation: recording-light 1.6s steps(2,jump-none) infinite; }
+  .finder i { animation: finder-focus 5s ease-in-out infinite alternate; }
+  .hero h1 { animation: camera-tear 9s steps(1) infinite; }
+  .hero .instant {
+    transform-origin: 50% -8%;
+    animation: print-sway 6.5s ease-in-out infinite alternate;
+  }
+  .case-cover { overflow: clip; }
+  .case-cover img { animation: cover-breathe 16s ease-in-out infinite alternate; }
+  .project-card.is-exposed .card-photo img { animation: cover-expose 1.4s ease-out; }
+  .hero .photo-window.is-developing img { animation: print-develop 2.6s ease-out; }
+  .photo-shutter {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+  .photo-shutter:focus-visible { outline-offset: -4px; }
+  .is-developing .photo-shutter::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: white;
+    animation: camera-flash .55s ease-out both;
+  }
+  .camera-mist {
+    position: absolute;
+    inset: -4%;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(ellipse 60% 30% at 20% 78%, rgba(200,215,225,.16), transparent 70%),
+                radial-gradient(ellipse 50% 26% at 75% 86%, rgba(200,215,225,.13), transparent 70%);
+    animation: mist-drift 46s ease-in-out infinite alternate;
+  }
+  .camera-snow { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 13; pointer-events: none; }
+  .hero > .camera-snow { position: absolute; z-index: -1; }
+
+  .camera-intro .hero { animation: camera-wake 1.9s ease-out; }
+  .camera-intro .hero h1 { animation: title-rise 1.1s .25s var(--camera-ease) backwards, camera-tear 9s 3s steps(1) infinite; }
+  .camera-intro .hero-copy > :not(h1) { animation: camera-up .9s var(--camera-ease) backwards; }
+  .camera-intro .hero-copy .eyebrow { animation-delay: .15s; }
+  .camera-intro .hero-copy .hero-intro { animation-delay: .6s; }
+  .camera-intro .hero-copy .actions { animation-delay: .9s; }
+  .camera-intro .hero-portrait { animation: print-drop 1.3s .5s var(--camera-ease) backwards; }
+  .camera-intro .hero-instruments { animation: camera-up 1s 1.1s var(--camera-ease) backwards; }
+  .camera-intro .mast { animation: mast-down .8s var(--camera-ease) backwards; }
+  .camera-intro .mast:focus-within,
+  .camera-intro .hero:focus-within,
+  .camera-intro .hero :focus-within { animation: none; }
+
+  @supports (animation-timeline: scroll()) and (animation-range: entry 0% entry 70%) {
+    .hero .scene-backdrop, .hero .lamp-light {
+      transform-origin: 58% 62%;
+      animation: camera-zoom linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0px 640px;
+    }
+    .camera-mist {
+      animation: mist-drift 46s ease-in-out infinite alternate, mist-thicken linear both;
+      animation-timeline: auto, scroll(root);
+      animation-range: normal, 300px 640px;
+    }
+    .hero-body:not(:focus-within) {
+      transform-origin: 50% 60%;
+      animation: camera-sink linear both;
+      animation-timeline: scroll(root);
+      animation-range: 30px 540px;
+    }
+    .section-head, .project-card, .milestones li, .case-media, .team-photo, .case-body aside {
+      animation: camera-reveal linear backwards;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+    :is(.project-grid, .milestones) > :nth-child(3n + 2) { animation-range: entry 12% entry 82%; }
+    :is(.project-grid, .milestones) > :nth-child(3n) { animation-range: entry 24% entry 94%; }
+    .milestones li::before {
+      transform-origin: top;
+      animation: route-trace linear backwards;
+      animation-timeline: view();
+      animation-range: entry 20% cover 45%;
+    }
+    .footer { overflow: clip; }
+    .footer h2 {
+      transform-origin: left center;
+      animation: contact-reveal linear backwards;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+    @media (min-width: 901px) {
+      .inspiration-card {
+        animation: camera-reveal linear backwards;
+        animation-timeline: view();
+        animation-range: entry 0% entry 70%;
+      }
+      .inspiration-card:nth-child(2) { animation-range: entry 12% entry 82%; }
+      .inspiration-card:nth-child(3) { animation-range: entry 24% entry 94%; }
+      .inspiration-card:nth-child(n+4) { animation-range: entry 36% cover 30%; }
+    }
+    .project-card:focus-within, .case-body aside:focus-within { animation: none; }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .hero .scene-backdrop, .hero .lamp-light, .camera-mist, .hero .instant { transition: translate .5s ease-out; }
+    .hero .scene-backdrop, .hero .lamp-light {
+      translate: calc(var(--camera-x,0) * -16px) calc(var(--camera-y,0) * -10px);
+      scale: var(--camera-overscan,1);
+    }
+    .camera-mist { translate: calc(var(--camera-x,0) * -34px) calc(var(--camera-y,0) * -14px); }
+    .hero .instant { translate: calc(var(--camera-x,0) * 12px) calc(var(--camera-y,0) * 9px); }
+    .card-link {
+      position: relative;
+      transform: perspective(1000px) rotateX(var(--card-rx,0deg)) rotateY(var(--card-ry,0deg));
+      transition: transform .5s var(--camera-ease);
+    }
+    .card-link::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: var(--card-glare,0);
+      background: radial-gradient(circle 260px at var(--card-x,50%) var(--card-y,50%), rgba(255,244,225,.12), transparent 70%);
+      transition: opacity .4s;
+    }
+    .project-card { position: relative; }
+    .project-card::before {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      inset: 0 0 auto;
+      height: 1px;
+      pointer-events: none;
+      background: linear-gradient(90deg,var(--accent),transparent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .7s var(--camera-ease);
+    }
+    .project-card:is(:hover,:focus-within)::before { transform: scaleX(1); }
+    .card-photo img { transition: transform 1.2s var(--camera-ease), filter .6s; }
+    .card-link:is(:hover,:focus-visible) .card-photo img { transform: scale(1.06); }
+    .button { transition: transform .35s var(--camera-ease), border-color .2s, background-color .2s, color .2s; }
+    .button:hover { transform: translateY(-2px); }
+    .finder-ring {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 40;
+      width: 34px;
+      height: 34px;
+      margin: -17px 0 0 -17px;
+      border: 1px solid rgba(var(--accent-rgb),.75);
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+      transition: width .3s var(--camera-ease), height .3s var(--camera-ease),
+                  margin .3s var(--camera-ease), background .3s, opacity .3s;
+    }
+    .finder-ring.is-visible { opacity: 1; }
+    .finder-ring.on-control {
+      width: 62px;
+      height: 62px;
+      margin: -31px 0 0 -31px;
+      background: rgba(var(--accent-rgb),.1);
+    }
+  }
+
+  @view-transition { navigation: auto; }
+  ::view-transition-old(root) { animation: camera-out .38s var(--camera-ease) both; }
+  ::view-transition-new(root) { animation: camera-in .62s var(--camera-ease) both; }
+  .camera-back::view-transition-old(root) { animation-name: camera-out-back; }
+  .camera-back::view-transition-new(root) { animation-name: camera-in-back; }
+  ::view-transition-group(project-cover) { animation-duration: .68s; animation-timing-function: var(--camera-ease); }
+  ::view-transition-old(project-cover), ::view-transition-new(project-cover) { height: 100%; object-fit: cover; }
+}
+
+@keyframes recording-light { to { opacity: .25; } }
+@keyframes finder-focus { to { width: 26px; height: 26px; } }
+@keyframes camera-tear {
+  0%, 96%, 100% { transform: none; filter: none; }
+  97% { transform: translateX(-4px) skewX(-3deg); filter: drop-shadow(3px 0 #dc6b5f) drop-shadow(-3px 0 var(--accent)); }
+  98.5% { transform: translateX(3px); filter: drop-shadow(-2px 0 #dc6b5f); }
+}
+@keyframes print-sway { from { transform: rotate(4.2deg); } to { transform: rotate(7.8deg); } }
+@keyframes cover-breathe { to { transform: scale(1.07); } }
+@keyframes cover-expose { from { filter: brightness(.25) sepia(.8) blur(2px); } }
+@keyframes print-develop {
+  from { filter: brightness(3) contrast(.3) sepia(.9) blur(4px); }
+  40% { filter: brightness(1.6) contrast(.6) sepia(.7) blur(1.5px); }
+}
+@keyframes camera-flash { from { opacity: .95; } to { opacity: 0; } }
+@keyframes mist-drift { to { transform: translateX(7%) scale(1.12); } }
+@keyframes mist-thicken { to { scale: 2.4; } }
+@keyframes camera-wake { from { filter: brightness(0); } }
+@keyframes title-rise {
+  from { opacity: 0; transform: translateY(46px); clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(-10% -10% -10% -10%); }
+}
+@keyframes camera-up { from { opacity: 0; transform: translateY(22px); } }
+@keyframes print-drop { from { opacity: 0; transform: translateY(-60px) rotate(-9deg) scale(1.12); } }
+@keyframes mast-down { from { opacity: 0; transform: translateY(-100%); } }
+@keyframes camera-zoom { to { transform: scale(2.15); } }
+@keyframes camera-sink { to { transform: scale(1.22); opacity: 0; filter: blur(6px); } }
+@keyframes camera-reveal { from { opacity: 0; transform: translateY(44px) scale(.88); } }
+@keyframes route-trace { from { transform: scaleY(0); } }
+@keyframes contact-reveal { from { opacity: 0; transform: scale(1.6); letter-spacing: .06em; } }
+@keyframes camera-out { to { opacity: 0; transform: scale(1.38); filter: blur(8px) brightness(.5); } }
+@keyframes camera-in { from { opacity: 0; transform: scale(.84); filter: blur(5px); } }
+@keyframes camera-out-back { to { opacity: 0; transform: scale(.78); filter: blur(8px) brightness(.5); } }
+@keyframes camera-in-back { from { opacity: 0; transform: scale(1.3); filter: blur(5px); } }

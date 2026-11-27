@@ -56,10 +56,14 @@ def scene_dialog(home):
 def page(title, description, active, main, css=(), bodyclass=''):
     version = json.loads((Path(__file__).resolve().parent.parent / 'dist/preview-state.json').read_text())['version']
     styles = ''.join(f'<link rel="stylesheet" href="assets/{sheet}?v={version}">' for sheet in css)
+    motion = '' if 'mechanics-view' in bodyclass.split() else (
+        f'<link rel="stylesheet" href="assets/motion.css?v={version}">'
+        f'<script src="assets/motion.js?v={version}" defer></script>'
+    )
     return f'''<!doctype html>
 <html lang="nl" data-scene="wintermist" data-palette="ijsblauw"><head>
 <meta charset="utf-8"><meta name="portfolio-versie" content="{version}"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#11171d"><meta name="description" content="{escape(description, quote=True)}"><title>{escape(title)} · Ilias Kamil</title>
-<link rel="icon" type="image/png" href="assets/ik.png"><link rel="preload" href="assets/fonts/display.woff" as="font" type="font/woff" crossorigin><link rel="stylesheet" href="assets/site.css?v={version}">{styles}<script src="assets/site.js?v={version}" defer></script><script src="meekijken.js" defer></script></head>
+<link rel="icon" type="image/png" href="assets/ik.png"><link rel="preload" href="assets/fonts/display.woff" as="font" type="font/woff" crossorigin><link rel="stylesheet" href="assets/site.css?v={version}">{styles}<script src="assets/site.js?v={version}" defer></script>{motion}<script src="meekijken.js" defer></script></head>
 <body class="{bodyclass}">{header(active)}<main id="inhoud" tabindex="-1">{main}</main>{footer()}{scene_dialog(active == "Home")}</body></html>'''
 
 
