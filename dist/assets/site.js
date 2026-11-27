@@ -35,7 +35,7 @@ document.addEventListener('click', event => {
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape' && navigation.classList.contains('open')) { closeMenu(); menu.focus(); }
 });
-window.matchMedia('(min-width: 781px)').addEventListener('change', closeMenu);
+window.matchMedia('(min-width: 901px)').addEventListener('change', closeMenu);
 
 document.querySelectorAll('[data-scene-open]').forEach(opener => {
   opener.addEventListener('click', () => openStyles(opener));
@@ -173,7 +173,108 @@ filters.forEach(button => button.addEventListener('click', () => {
   requestBatteryUpdate();
 }));
 
-function setupTabs(container, barClass, tabClass, panelClass, prefix) {
+function setupTrialRecordings(container) {
+  const figures = container.querySelectorAll('.trial-recording');
+  if (!figures.length || !window.Image) return;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const recordings = new Map();
+  let active;
+  let inView = false;
+  let state = 'idle';
+  let request = 0;
+
+  function reset() {
+    request++;
+    state = 'idle';
+    if (!active) return;
+    active.poster.setAttribute('media', 'all');
+    active.button.textContent = 'Afspelen';
+  }
+
+  async function play() {
+    if (!active || document.hidden || state === 'loading') return;
+    const clip = active;
+    const ticket = ++request;
+    state = 'loading';
+    clip.button.textContent = 'Laden…';
+    if (!clip.ready) {
+      clip.ready = new Promise((resolve, reject) => {
+        const preload = new window.Image();
+        preload.onload = () => resolve();
+        preload.onerror = reject;
+        preload.src = clip.url;
+      });
+    }
+    try {
+      await clip.ready;
+    } catch {
+      clip.ready = null;
+      if (ticket === request) {
+        state = 'idle';
+        clip.button.textContent = 'Opnieuw proberen';
+      }
+      return;
+    }
+    if (ticket !== request) return;
+    clip.poster.setAttribute('media', 'not all');
+    // Reassigning the same src restarts an animated image, including a cached GIF.
+    clip.image.setAttribute('src', clip.url);
+    state = 'playing';
+    clip.button.textContent = reduced.matches ? 'Stoppen' : 'Opnieuw afspelen';
+  }
+
+  function autoplay() {
+    if (inView && !reduced.matches && state === 'idle') play();
+  }
+
+  for (const figure of figures) {
+    const picture = figure.querySelector('picture');
+    const image = picture.querySelector('img');
+    const poster = picture.querySelector('source');
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'recording-control';
+    button.textContent = 'Afspelen';
+    poster.setAttribute('media', 'all');
+    const clip = { picture, image, poster, button, url: image.getAttribute('src'), ready: null };
+    recordings.set(figure.closest('.mechanic-content'), clip);
+    figure.querySelector('figcaption').append(button);
+    button.addEventListener('click', () => {
+      if (active !== clip) return;
+      if (reduced.matches && state === 'playing') reset();
+      else play();
+    });
+  }
+
+  const mastHeight = document.querySelector('.mast')?.offsetHeight || 0;
+  const observer = 'IntersectionObserver' in window ? new window.IntersectionObserver(entries => {
+    for (const entry of entries) {
+      if (entry.target !== active?.picture) continue;
+      inView = entry.isIntersecting && entry.intersectionRatio >= 0.9;
+      if (!entry.isIntersecting) reset();
+      else autoplay();
+    }
+  }, { threshold: [0, 0.9], rootMargin: `-${mastHeight}px 0px 0px` }) : null;
+
+  reduced.addEventListener('change', () => { reset(); autoplay(); });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) reset();
+    else autoplay();
+  });
+  return panel => {
+    const next = recordings.get(panel);
+    if (next === active) return;
+    observer?.disconnect();
+    reset();
+    active = next;
+    inView = !observer;
+    if (!active) return;
+    if (observer) observer.observe(active.picture);
+    else autoplay();
+  };
+}
+
+function setupTabs(container, barClass, tabClass, panelClass, prefix, onSelect) {
   const bar = container.querySelector(`:scope > .${barClass}`);
   if (!bar) return;
   const buttons = Array.from(bar.querySelectorAll(`.${tabClass}`));
@@ -191,6 +292,7 @@ function setupTabs(container, barClass, tabClass, panelClass, prefix) {
       panels[i].hidden = !active;
       if (!active) panels[i].querySelectorAll('video,audio').forEach(media => media.pause());
     });
+    onSelect?.(panels[index]);
     requestBatteryUpdate();
   }
   buttons.forEach((button, i) => {
@@ -215,7 +317,7 @@ function setupTabs(container, barClass, tabClass, panelClass, prefix) {
 
 const mechanics = document.querySelector('.mechanics-page');
 if (mechanics) {
-  setupTabs(mechanics, 'mechanic-tabs', 'mechanic-tab', 'mechanic-content', 'mechanic');
+  setupTabs(mechanics, 'mechanic-tabs', 'mechanic-tab', 'mechanic-content', 'mechanic', setupTrialRecordings(mechanics));
   mechanics.querySelectorAll('.mechanic-content').forEach((panel, i) => {
     setupTabs(panel, 'level-tabs', 'level-tab', 'level-content', `level-${i}`);
   });

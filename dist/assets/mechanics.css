@@ -17,6 +17,23 @@
 .mechanic-video img { height:auto; }
 .mechanic-video>img,.mechanic-diagram img { border:1px solid var(--line); background:var(--surface); }
 .mechanic-diagram figcaption { margin-top:8px; color:var(--quiet); font-size:.92rem; }
+.trial-recording picture { display:block; }
+.trial-recording img {
+  max-height:calc(100vh - var(--nav-height) - 3.5rem);
+  max-height:calc(100svh - var(--nav-height) - 3.5rem);
+  object-fit:contain;
+}
+.trial-recording figcaption { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:6px 16px; }
+.recording-control {
+  min-height:32px;
+  padding:4px 9px;
+  border:1px solid var(--line);
+  border-radius:2px;
+  color:var(--accent);
+  background:var(--panel);
+  font:.85rem/1.4 var(--mono);
+}
+.recording-control:focus-visible { outline-offset:2px; }
 .mechanic-description { min-width:0; }
 .mechanic-description h2 { font:600 clamp(2rem,3vw,3rem)/1.1 Narrow,sans-serif; }
 .mechanic-description p,.level-changes,.audio-section p { color:var(--quiet); font-size:1rem; line-height:1.7; margin:12px 0; }
@@ -43,17 +60,19 @@
 .audio-section { border:1px solid var(--line); background:var(--panel); padding:15px; }
 .audio-player+.audio-player { margin-top:12px; }
 .audio-player p { margin:5px 0; }
-@media(max-width:900px) {
+@media(max-width:900px), (pointer:coarse) and (max-width:1366px) {
   .mechanic-layout { grid-template-columns:minmax(0,1fr); gap:24px; }
   .mechanic-video { width:100%; max-width:700px; margin-inline:auto; }
+  .bowarrow .mechanic-video { max-width:800px; }
 }
 @media (pointer:coarse), (max-width:900px) {
-  .mechanic-tab,.level-tab,.copy-code { min-height:44px; }
+  .mechanic-tab,.level-tab,.copy-code,.recording-control { min-height:44px; }
 }
 @media(max-width:580px) {
   .technical { padding-block:24px 48px; }
   .mechanics-title { font-size:clamp(2.7rem,10vw,3.6rem); }
   .mechanic-tabs { gap:6px; padding-block:18px; }
+  .bowarrow .mechanic-tabs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
   .mechanic-tab,.level-tab { padding-inline:10px; }
   .mechanic-description h2 { overflow-wrap:anywhere; }
 }

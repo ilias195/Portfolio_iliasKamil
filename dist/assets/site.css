@@ -243,10 +243,8 @@ main:focus { outline: none; }
     scroll-padding-inline:10px;
   }
   .inspiration-card { scroll-snap-align:start; }
-}
-@media(max-width:780px) {
   :root { --nav-height:63px; }
-  .wrap,.mast-inner { width:calc(100% - 44px); }
+  .mast-inner { width:calc(100% - 44px); }
   .identity { gap:8px; }
   .identity-name { font-size:1.2rem; }
   .power { padding-left:12px; }
@@ -257,6 +255,9 @@ main:focus { outline: none; }
   .site-nav a[aria-current] { color:var(--accent); }
   .site-nav a[aria-current]::after { left:0; bottom:12px; top:12px; height:auto; width:2px; right:auto; }
   .scene-trigger { margin-left:auto; }
+}
+@media(max-width:780px) {
+  .wrap { width:calc(100% - 44px); }
   .hero-body { min-height:503px; gap:3%; padding:70px 2.5%; grid-template-columns:1.1fr .9fr; }
   .hero h1 { font-size:6.6rem; }
   .hero .actions { gap:8px; }
